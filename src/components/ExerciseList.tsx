@@ -6,7 +6,7 @@ export default function ExerciseList({exerciseData = []}) {
     const [exercises, setExercises] = useState(exerciseData);
     console.log("renderList")
     const showExercises = () => {
-        return exercises
+        return exercises.map((exercise) => <Exercise key={exercises.length + 1} weightsData={exercise}/>);
     }
 
     const addExercises = () => {
