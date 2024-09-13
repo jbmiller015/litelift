@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import Exercise from "@/components/Exercise";
-import exercise from "@/components/Exercise";
+import Exercise from "@/components/EditExercise";
+import editExercise from "@/components/EditExercise";
 
 export default function ExerciseList({exerciseData = []}) {
     const [exercises, setExercises] = useState(exerciseData);

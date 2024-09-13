@@ -2,21 +2,30 @@ import {useEffect, useState} from "react";
 import Weight from "./Weight";
 import {string} from "prop-types";
 
-interface ExProps {
+interface EditProps {
     weightsData: string[],
+    edit: boolean,
     key: String
 }
 
-export default function exercise({weightsData = [], key}: ExProps) {
+export default function editExercise({weightsData = [], edit = false, key}: EditProps) {
 
     const [weights, setWeights] = useState(weightsData);
+    const [editExercise, setEditExercise] = useState(edit);
+    useEffect(() => {
+        if (weights.length < 1) {
+            addWeight();
+        }
+        setEditExercise(edit)
+    }, [edit]);
+    console.log("renderexercise")
 
     const showWeight = () => {
-        return weights.map((weight, i) => {})
+        return weights
     }
 
     const addWeight = () => {
-        setWeights([...weights, ]);
+        setWeights([...weights, <Weight edit={editExercise}/>]);
     }
 
     const editWeights = () => {
