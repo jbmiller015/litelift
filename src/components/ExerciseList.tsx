@@ -1,16 +1,14 @@
-import {useEffect, useState} from "react";
-import Exercise from "@/components/EditExercise";
+import Exercise from "@/components/Exercise";
 import editExercise from "@/components/EditExercise";
 
 export default function ExerciseList({exerciseData = []}) {
-    const [exercises, setExercises] = useState(exerciseData);
     console.log("renderList")
     const showExercises = () => {
-        return exercises.map((exercise) => <Exercise key={exercises.length + 1} weightsData={exercise}/>);
+        return exerciseData.map((exercise) => <Exercise key={`${exerciseData.length + 1}`} weightsData={exercise}/>);
     }
 
     const addExercises = () => {
-        setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
+        //setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
     }
     return (<>
         <div>{showExercises()}</div>

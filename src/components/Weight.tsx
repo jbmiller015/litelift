@@ -1,9 +1,5 @@
-import React, {useState} from "react";
-
-export default function weight({weightData = 0, repsData = 1, increment = 10, edit, editWeight}: {}) {
+export default function weight({weightData = 0, repsData = 1, increment = 10, edit}: {}) {
     console.log("renderWeight")
-    const [reps, setReps] = useState(repsData);
-    const [weight, setWeight] = useState(weightData);
 
     function deleteWeights(e: React.MouseEvent<HTMLDivElement>) {
 
@@ -27,8 +23,8 @@ export default function weight({weightData = 0, repsData = 1, increment = 10, ed
             </div> : null}
             <div className="relative flex items-center max-w-[11rem] min-w-[10rem]">
                 <button type="button" id="decrement-button" onClick={() => {
-                    const newWeight = weight - 1;
-                    setWeight(newWeight);
+                    const newWeight = weightData - 1;
+                    //setWeightData(newWeight);
                 }}
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -40,14 +36,14 @@ export default function weight({weightData = 0, repsData = 1, increment = 10, ed
                 <input type="text" id="weight-input" data-input-counter data-input-counter-min="1"
                        data-input-counter-max="5" aria-describedby="helper-text-explanation"
                        className="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pb-6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="" value={weight} required/>
+                       placeholder="" value={weightData} required/>
                 <div
                     className="absolute bottom-1 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center text-xs text-gray-400 space-x-1 rtl:space-x-reverse">
                     <span>Weight</span>
                 </div>
                 <button type="button" id="increment-button" onClick={() => {
-                    const newWeight = weight + increment;
-                    setWeight(newWeight);
+                    const newWeight = weightData + increment;
+                    //setWeightData(newWeight);
                 }}
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -59,8 +55,8 @@ export default function weight({weightData = 0, repsData = 1, increment = 10, ed
             </div>
             <div className="relative flex items-center max-w-[11rem]">
                 <button type="button" id="decrement-button" onClick={() => {
-                    const newReps = reps - 1;
-                    setReps(newReps);
+                    const newReps = repsData - 1;
+                    //setRepsData(newReps);
                 }}
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -72,7 +68,7 @@ export default function weight({weightData = 0, repsData = 1, increment = 10, ed
                 <input type="text" id="reps-input" data-input-counter min="1"
                        aria-describedby="helper-text-explanation"
                        className="bg-gray-50 border-x-0 border-gray-300 h-11 font-medium text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full pb-6 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                       placeholder="" value={reps} required/>
+                       placeholder="" value={repsData} required/>
                 <div
                     className="absolute bottom-1 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 flex items-center text-xs text-gray-400 space-x-1 rtl:space-x-reverse">
 
@@ -97,8 +93,8 @@ export default function weight({weightData = 0, repsData = 1, increment = 10, ed
                     <span>Reps</span>
                 </div>
                 <button type="button" id="increment-button" onClick={() => {
-                    const newReps = reps + 1;
-                    setReps(newReps);
+                    const newReps = repsData + 1;
+                    //setRepsData(newReps);
                 }}
                         className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                     <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
