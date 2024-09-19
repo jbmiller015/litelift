@@ -1,0 +1,192 @@
+[
+  {
+    "_id": "66e0fee187e6536421d071f4",
+    "user_id": "66e0fff387e6536421d071f6",
+    "w_r": [
+      {
+        "weight": 30.5,
+        "reps": 3,
+        "complete": false,
+        "fail": false
+      },
+      {
+        "weight": 42.0,
+        "reps": 4,
+        "complete": false,
+        "fail": false
+      }
+    ],
+    "name": "Squat"
+  },
+  {
+    "_id": "66e0fee187e6536421d071f5",
+    "user_id": "66e0fff387e6536421d071f7",
+    "w_r": [
+      {
+        "weight": 25.0,
+        "reps": 5,
+        "complete": true,
+        "fail": false
+      },
+      {
+        "weight": 30.0,
+        "reps": 4,
+        "complete": false,
+        "fail": false
+      }
+    ],
+    "name": "Deadlift"
+  },
+  {
+    "_id": "66e0fee187e6536421d071f6",
+    "user_id": "66e0fff387e6536421d071f8",
+    "w_r": [
+      {
+        "weight": 20.0,
+        "reps": 8,
+        "complete": true,
+        "fail": false
+      },
+      {
+        "weight": 22.5,
+        "reps": 6,
+        "complete": true,
+        "fail": false
+      }
+    ],
+    "name": "Bench Press"
+  },
+  {
+    "_id": "66e0fee187e6536421d071f7",
+    "user_id": "66e0fff387e6536421d071f9",
+    "w_r": [
+      {
+        "weight": 15.0,
+        "reps": 10,
+        "complete": true,
+        "fail": false
+      },
+      {
+        "weight": 17.5,
+        "reps": 8,
+        "complete": true,
+        "fail": false
+      }
+    ],
+    "name": "Overhead Press"
+  },
+  {
+    "_id": "66e0fee187e6536421d071f8",
+    "user_id": "66e0fff387e6536421d071fa",
+    "w_r": [
+      {
+        "weight": 35.0,
+        "reps": 3,
+        "complete": false,
+        "fail": true
+      },
+      {
+        "weight": 37.5,
+        "reps": 3,
+        "complete": false,
+        "fail": true
+      }
+    ],
+    "name": "Barbell Row"
+  },
+  {
+    "_id": "66e0fee187e6536421d071f9",
+    "user_id": "66e0fff387e6536421d071fb",
+    "w_r": [
+      {
+        "weight": 40.0,
+        "reps": 5,
+        "complete": false,
+        "fail": false
+      },
+      {
+        "weight": 45.0,
+        "reps": 4,
+        "complete": false,
+        "fail": false
+      }
+    ],
+    "name": "Leg Press"
+  },
+  {
+    "_id": "66e0fee187e6536421d071fa",
+    "user_id": "66e0fff387e6536421d071fc",
+    "w_r": [
+      {
+        "weight": 12.0,
+        "reps": 12,
+        "complete": true,
+        "fail": false
+      },
+      {
+        "weight": 14.0,
+        "reps": 10,
+        "complete": true,
+        "fail": false
+      }
+    ],
+    "name": "Dumbbell Curl"
+  },
+  {
+    "_id": "66e0fee187e6536421d071fb",
+    "user_id": "66e0fff387e6536421d071fd",
+    "w_r": [
+      {
+        "weight": 50.0,
+        "reps": 3,
+        "complete": false,
+        "fail": false
+      },
+      {
+        "weight": 55.0,
+        "reps": 2,
+        "complete": false,
+        "fail": false
+      }
+    ],
+    "name": "Pull-up"
+  },
+  {
+    "_id": "66e0fee187e6536421d071fc",
+    "user_id": "66e0fff387e6536421d071fe",
+    "w_r": [
+      {
+        "weight": 18.0,
+        "reps": 10,
+        "complete": true,
+        "fail": false
+      },
+      {
+        "weight": 20.0,
+        "reps": 8,
+        "complete": true,
+        "fail": false
+      }
+    ],
+    "name": "Lateral Raise"
+  },
+  {
+    "_id": "66e0fee187e6536421d071fd",
+    "user_id": "66e0fff387e6536421d071ff",
+    "w_r": [
+      {
+        "weight": 60.0,
+        "reps": 5,
+        "complete": false,
+        "fail": false
+      },
+      {
+        "weight": 65.0,
+        "reps": 4,
+        "complete": false,
+        "fail": false
+      }
+    ],
+    "name": "Lat Pulldown"
+  }
+]
