@@ -1,10 +1,10 @@
 import Exercise from "@/components/Exercise";
 import editExercise from "@/components/EditExercise";
+//import exerciseData from "/Example_Data.json";
 
 export default function ExerciseList({exerciseData = []}) {
-    console.log("renderList")
     const showExercises = () => {
-        return exerciseData.map((exercise) => <Exercise key={`${exerciseData.length + 1}`} weightsData={exercise}/>);
+        return exerciseData.map((exercise) => <Exercise weightsData={exercise}/>);
     }
 
     const addExercises = () => {

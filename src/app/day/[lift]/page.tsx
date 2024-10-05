@@ -18,18 +18,14 @@ import Exercise from "@/components/Exercise";
  return {props: {exerciseData}}
  }*/
 
-export default async function Day() {
+export default function Day(props) {
     //const data = await clientPromise;
-    let exerciseData: any[] = exampleData;
-    try {
-        //const db = data.db(process.env.DB_NAME);
-        //let collectionName: string = process.env.EXCERCISE_COL;
-        //exerciseData = await db.collection(collectionName).find({}).toArray();
-        //console.log("exerciseData", exerciseData)
-    } catch (e) {
-        console.log('error: ', e)
-    }
-    return (<div>
-
+    let exerciseData: {} = exampleData.filter((data)=> {
+        return data.name === props.params.lift.replaceAll('%20',' ')
+    })[0];
+    console.log(props)
+    return (<div className="text-center">
+        <h2 className="text-5xl my-4">{exerciseData.name}</h2>
+        <ExerciseList exerciseData={exerciseData.exerciseData}/>
     </div>);
 }
