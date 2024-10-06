@@ -8,12 +8,12 @@ export default function Weight_Icon() {
         <path
             d="M6.82031 18C4.42031 18 3.82031 16.65 3.82031 15V9C3.82031 7.35 4.42031 6 6.82031 6C9.22031 6 9.82031 7.35 9.82031 9V15C9.82031 16.65 9.22031 18 6.82031 18Z"
             stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path opacity="0.4" d="M9.82031 12H14.1803" stroke="currentColor" strokeWidth="1.5"
+        <path d="M9.82031 12H14.1803" stroke="currentColor" strokeWidth="1.5"
               strokeLinecap="round" strokeLinejoin="round"/>
-        <path opacity="0.4" d="M22.5 14.5V9.5" stroke="currentColor" strokeWidth="1.5"
+        <path d="M22.5 14.5V9.5" stroke="currentColor" strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"/>
-        <path opacity="0.4" d="M1.5 14.5V9.5" stroke="currentColor" strokeWidth="1.5"
+        <path d="M1.5 14.5V9.5" stroke="currentColor" strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"/>
     </svg>);
