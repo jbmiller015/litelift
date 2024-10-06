@@ -1,5 +1,5 @@
 import Exercise from "@/components/Exercise";
-import editExercise from "@/components/EditExercise";
+import editExercise_old from "@/components/EditExercise_old";
 //import exerciseData from "/Example_Data.json";
 
 export default function ExerciseList({exerciseData = []}) {
