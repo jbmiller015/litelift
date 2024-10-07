@@ -1,5 +1,7 @@
 [
   {
+    "_id": "670339fe0b3f59854bee8515",
+    "user_id": "66e0fff387e6536421d071f6",
     "name": "Olympic",
     "exerciseData":[
     {
@@ -315,6 +317,8 @@
   ]
   },
   {
+    "_id": "670339fe0b3f59854bee8514",
+    "user_id": "66e0fff387e6536421d071f6",
     "name": "Small Groups",
     "exerciseData":[
     {
@@ -630,6 +634,8 @@
   ]
   },
   {
+    "_id": "670339fe0b3f59854bee8513",
+    "user_id": "66e0fff387e6536421d071f6",
     "name": "Legs for Dayz",
     "exerciseData":[
       {
