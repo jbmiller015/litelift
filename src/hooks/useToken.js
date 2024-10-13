@@ -1,26 +1,25 @@
-import {useState} from 'react';
+import { cookies } from 'next/headers'
+
 
 export default function useToken() {
+    const cookieStore = cookies()
     const getToken = () => {
-        const tokenString = localStorage.getItem('token');
+        const tokenString = cookieStore.get('token');
         const userToken = JSON.parse(tokenString);
         return userToken?.token
     };
 
-    const [token, setToken] = useState(getToken());
-
     const saveToken = userToken => {
         if (!userToken) {
-            localStorage.clear()
-            setToken(null);
+            cookieStore.delete('token');
         } else {
-            localStorage.setItem('token', JSON.stringify(userToken));
+            cookieStore.set('token', JSON.stringify(userToken),{secure:true});
             setToken(userToken);
         }
     };
 
     return {
         setToken: saveToken,
-        token
+        getToken: getToken
     }
 }

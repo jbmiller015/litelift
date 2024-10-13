@@ -1,14 +1,17 @@
 import exampleData from "/Example_Data.json";
 import Day from "@/components/Day";
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export default function Home() {
+    const cookieStore = cookies();
+
 
     let exerciseData: any[] = exampleData;
     const showDays = () => {
         return exerciseData.map((day, i) => <Day exerciseData={day}/>)
     }
-    if (!localStorage.getItem('token')) {
+    if (!cookieStore.has('token')) {
         redirect('/welcome');
     }
     return (<div className="text-center">

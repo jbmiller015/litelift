@@ -14,6 +14,8 @@ export default function Menu() {
         viewName = pathname.slice('/day/'.length);
         console.log(viewName)
     }
+    if(pathname.startsWith('/welcome'))
+        return null;
     return (<div className="w-100 h-14 border rounded-lg m-2 flex flex-row items-center justify-between">
             <Link href={'/'}>
                 <div

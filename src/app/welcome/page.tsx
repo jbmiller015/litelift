@@ -1,5 +1,6 @@
-import useToken from '@/hooks/useToken';
+'use client'
 import AuthForm from "../../components/AuthForm";
-const {token, setToken} = useToken();
 
-return(<AuthForm setToken={setToken}/>);
+export default function welcome() {
+    return (<AuthForm/>);
+}

@@ -1,5 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import bcrypt from 'bcrypt';
+import useToken from '@/hooks/useToken';
+const {setToken} = useToken();
 
 const jwt = require('jsonwebtoken');
 
@@ -31,7 +33,8 @@ async function login(req:Request) {
             },
             secret: jwtString
         })
-        Response.json({token}, {statusText: "Success", status: 200});
+        setToken(token)
+        Response.json('Success', {statusText: "Success", status: 200});
     } catch (e) {
         return Response.json('Invalid Password or login name', {statusText: "Error", status: 422});
     }
