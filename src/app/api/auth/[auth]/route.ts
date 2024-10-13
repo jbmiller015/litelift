@@ -1,4 +1,5 @@
 import clientPromise from "@/lib/mongodb";
+import bcrypt from 'bcrypt';
 
 const jwt = require('jsonwebtoken');
 
@@ -23,7 +24,7 @@ async function login(req:Request) {
         return Response.json('Invalid Password or login name', {statusText: "Error", status: 422});
 
     try {
-        await user.comparePassword(password);
+        await comparePassword(password, user.password);
         const token = jwt.sign({
             payload: {
                 userId: user._id
@@ -54,6 +55,18 @@ async function signup(request: Request) {
             Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
         }
 
+}
+
+async function comparePassword(candidatePassword, userPassword) {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(candidatePassword, userPassword, (err, isMatch) => {
+            if (err)
+                return reject(err);
+            if (!isMatch)
+                return reject(false);
+            resolve(true);
+        })
+    });
 }
 
 export async function POST(
