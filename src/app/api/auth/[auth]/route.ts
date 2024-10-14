@@ -3,11 +3,12 @@ import bcrypt from 'bcrypt';
 import useToken from '@/hooks/useToken';
 const {setToken} = useToken();
 
-const jwt = require('jsonwebtoken');
 
 const jwtString = process.env.JWT_AUTH;
 
 async function login(req:Request) {
+    console.log(req)
+
     const {name, password} = req.body;
 
     if (!name || !password)
