@@ -56,15 +56,17 @@ const AuthForm = () => {
 
         if (!submitError) {
             setLoading(true);
+            const bodyVal = await JSON.stringify({...authData});
             await fetch(`/api/auth/${path}`, {
                 method: "POST",
-                body: JSON.stringify({...authData})
+                body: bodyVal
             })
                 .then(res => {
                     setLoading(false);
                     router.push('/');
                 })
                 .catch(err => {
+                    console.log(err.response)
                     setError(err.response);
                     setLoading(false)
                 });
@@ -97,7 +99,7 @@ const AuthForm = () => {
             ) : (
                 <div>
                     <form className="space-y-4">
-                        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 text-black">
                             <div className="mb-4">
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                                     Username

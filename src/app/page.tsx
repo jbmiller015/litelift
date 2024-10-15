@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 
 export default function Home() {
     const cookieStore = cookies();
+    cookieStore.getAll().forEach(el=>{console.log(el)})
 
 
     let exerciseData: any[] = exampleData;

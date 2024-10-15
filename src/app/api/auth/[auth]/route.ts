@@ -1,24 +1,24 @@
 import clientPromise from "@/lib/mongodb";
 import bcrypt from 'bcrypt';
-import useToken from '@/hooks/useToken';
-const {setToken} = useToken();
+import jwt from 'jsonwebtoken'
+import { cookies } from 'next/headers'
 
 
 const jwtString = process.env.JWT_AUTH;
 
 async function login(req:Request) {
-    console.log(req)
 
-    const {name, password} = req.body;
+    const body = await req.json();
+    const {email, password} = body;
 
-    if (!name || !password)
+    if (!email || !password)
         return Response.json('Must provide login name and password', {statusText: "Error", status: 422});
 
     let user;
     try {
         const data = await clientPromise;
         const db = data.db(process.env.DB_NAME);
-        user = await db.collection(process.env.USER_COL).findOne({name});
+        user = await db.collection(process.env.USER_COL).findOne({name: email});
     } catch (err) {
         console.log(err)
     }
@@ -34,12 +34,21 @@ async function login(req:Request) {
             },
             secret: jwtString
         })
-        setToken(token)
+        saveToken(token)
         Response.json('Success', {statusText: "Success", status: 200});
     } catch (e) {
         return Response.json('Invalid Password or login name', {statusText: "Error", status: 422});
     }
 }
+
+const saveToken = userToken => {
+    const cookieStore = cookies();
+    if (!userToken) {
+        cookieStore.delete('token');
+    } else {
+        cookieStore.set('token', JSON.stringify(userToken),{secure:true});
+    }
+};
 
 async function signup(request: Request) {
     const {name, password} = request.body;
@@ -75,12 +84,12 @@ async function comparePassword(candidatePassword, userPassword) {
 
 export async function POST(
     request: Request,
-    { params }: { params: { slug: string } }
+    { params }: { params: { auth: string } }
 ) {
-    const route = params.slug;
+    const route = params.auth;
     switch (route){
-        case "login": return await login(request);
-        case "signup": return await login(request);
+        case 'login': return await login(request);
+        case 'signup': return await login(request);
         default: return Response.json('Not found', {statusText: "Error", status: 404})
     }
 }
