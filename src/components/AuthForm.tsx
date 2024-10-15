@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {router} from "next/client";
+import {useRouter} from 'next/navigation'
 import logo from "@/assets/images/weight-1-svgrepo-com.png";
 import Image from "next/image";
 
@@ -14,6 +14,7 @@ const AuthForm = () => {
     const [path, setPath] = useState('login');
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
 
     useEffect(() => {
@@ -56,20 +57,19 @@ const AuthForm = () => {
 
         if (!submitError) {
             setLoading(true);
-            const bodyVal = await JSON.stringify({...authData});
-            await fetch(`/api/auth/${path}`, {
+            const bodyVal = JSON.stringify({...authData});
+            const res = await fetch(`/api/auth/${path}`, {
                 method: "POST",
                 body: bodyVal
             })
-                .then(res => {
-                    setLoading(false);
-                    router.push('/');
-                })
-                .catch(err => {
-                    console.log(err.response)
-                    setError(err.response);
-                    setLoading(false)
-                });
+            if (res.ok) {
+                setLoading(false);
+                router.push('/');
+            } else {
+                const errorBody = await res.json();
+                setError({status: res.status, statusText: res.statusText, data: errorBody});
+                setLoading(false)
+            }
         }
 
     }
@@ -77,9 +77,10 @@ const AuthForm = () => {
     return (
         <div className="flex flex-col justify-center items-center p-4 md:p-12">
             <h2 className="text-7xl py-5">LiteLift</h2>
-            <div className="bg-clip-content p-4 dark:border-gray-500 border-gray-500 border-4 border-dashed rounded-full">
-            <Image src={logo} alt="heroLogo" height="200" width="200"/>
-                </div>
+            <div
+                className="bg-clip-content p-4 dark:border-gray-500 border-gray-500 border-4 border-dashed rounded-full">
+                <Image src={logo} alt="heroLogo" height="200" width="200"/>
+            </div>
             <div className="my-4 border-b border-gray-300"/>
             {
                 Object.keys(error).length !== 0 ? (
