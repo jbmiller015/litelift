@@ -44,7 +44,7 @@ async function login(req: Request) {
 }
 
 async function signup(request: Request) {
-    const {name, password} = request.body;
+    const {name, password} = request.json();
     try {
         const data = await clientPromise;
         const db = data.db(process.env.DB_NAME);

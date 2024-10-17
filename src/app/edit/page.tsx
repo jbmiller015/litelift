@@ -42,21 +42,26 @@ export default function EditHome() {
         fetchData()
     }, [])
     const showDays = () => {
-        return exerciseData.map((day, i) => <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}/>
+        return exerciseData.map((day, i) => <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}
+                                                                              index={i}/>
         </div>)
     }
-    const editDay = () => {
-
+    const editDay = (value, index) => {
+        setExerciseData((ex) => {
+            const newArray = [...ex];
+            newArray[index] = {...newArray[index], name: value}
+            return newArray;
+        })
+        console.log(exerciseData)
     }
     const submitHome = () => {
         async function submitData() {
             const validCheck = exerciseData.some((el) => {
                 return (el.name === '')
             })
-            if (!validCheck) {
-                const errorBody = await res.json();
-                setError({status: res.status, statusText: res.statusText, data: errorBody});
-                setLoading(false)
+            if (validCheck) {
+                setError({status: 401, statusText: 'Validation Error', data: 'Please Give a Name to All New Lifts'});
+                setLoading(false);
             } else {
                 let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
                     method: "PUT",
@@ -72,7 +77,6 @@ export default function EditHome() {
                 }
             }
         }
-
         submitData()
     }
     const addDay = () => {

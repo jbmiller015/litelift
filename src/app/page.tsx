@@ -10,14 +10,14 @@ export default async function Home() {
 
     let exerciseData: any[] = exampleData;
     const showDays = () => {
-        return exerciseData.map((day, i) => <div key={`$day{i}`}><Day exerciseData={day}/></div>)
+        return exerciseData.map((day, i) => <div key={`day${i}`}><Day exerciseData={day}/></div>)
     }
     if (!token) {
         redirect('/welcome');
     } else {
         const res = await fetch('http://localhost:3000/api/day/', {
             method: "GET",
-            headers: {'Set-Cookie': `token=${token}`}
+            headers: {'cookie': `token=${token}`}
         })
         if (res.ok) {
             const data = await res.json();
