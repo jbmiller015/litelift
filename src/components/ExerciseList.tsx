@@ -4,7 +4,7 @@ import editExercise_old from "@/components/EditExercise_old";
 
 export default function ExerciseList({exerciseData = []}) {
     const showExercises = () => {
-        return exerciseData.map((exercise) => <Exercise weightsData={exercise}/>);
+        return exerciseData.map((exercise, i) => <div key={`exercise${i}`}><Exercise weightsData={exercise}/></div>);
     }
 
     const addExercises = () => {
@@ -12,6 +12,5 @@ export default function ExerciseList({exerciseData = []}) {
     }
     return (<>
         <div>{showExercises()}</div>
-        <button onClick={() => addExercises()}>Add Exercise</button>
     </>);
 }

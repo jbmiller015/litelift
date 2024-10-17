@@ -16,7 +16,8 @@ export default function exercise({weightsData = [], key}: ExProps) {
 
     const showWeight = () => {
         return weightsData.w_r.map((wr, i) =>
-            <Weight weight={wr.weight} reps={wr.reps} complete={wr.complete} fail={wr.fail}/>
+            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} complete={wr.complete} fail={wr.fail}/>
+            </div>
         )
     }
 

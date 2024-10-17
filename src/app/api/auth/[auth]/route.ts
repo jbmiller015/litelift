@@ -33,7 +33,10 @@ async function login(req: Request) {
             }
         }, jwt_key)
         saveToken(token)
-        return Response.json('Success', {statusText: "Success", status: 200});
+        return Response.json('Success', {
+            statusText: "Success",
+            status: 200
+        });
     } catch (e) {
         console.log(e)
         return Response.json('Invalid Password or login name', {statusText: "Error", status: 422});
@@ -49,14 +52,12 @@ async function signup(request: Request) {
         const user = await db.collection(process.env.USER_COL).insert({name: name, password: hashPass});
         const jwt_key = process.env.JWT_SECRET_KEY;
         const token = jwt.sign({
-            payload: {
-                userId: user._id
-            }
+            userId: user._id
         }, jwt_key)
         return Response.json({token}, {statusText: "success", status: 200});
     } catch (e) {
         console.log(e);
-        Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
+        return Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
     }
 
 }
@@ -66,13 +67,11 @@ const saveToken = userToken => {
     if (!userToken) {
         cookieStore.delete('token');
     } else {
-        cookieStore.set('token', JSON.stringify(userToken), {secure: true});
+        cookieStore.set('token', userToken);
     }
 };
 
 async function comparePassword(candidatePassword: string, userPassword: string) {
-    console.log("candidatePassword: ", candidatePassword.trim())
-    console.log("userPassword: ", userPassword)
     return new Promise((resolve, reject) => {
         bcrypt.compare(candidatePassword, userPassword, (err, isMatch) => {
             if (err) {

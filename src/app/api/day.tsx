@@ -17,18 +17,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 }
 
 
-const agg = [
-    {
-        '$match': {
-            'user_id': new ObjectId(sessionStorage.getItem("user"))
-        }
-    }, {
-        '$lookup': {
-            'from': 'exercise',
-            'localField': 'exerciseData',
-            'foreignField': '_id',
-            'as': 'exerciseData'
-        }
-    }
-];
+
 
