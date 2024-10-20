@@ -9,12 +9,13 @@ import {ObjectId} from "bson";
 interface dayData {
     _id?: ObjectId,
     exerciseData: ObjectId[]
-    name: string,
+    name: string | null,
     user_id?: ObjectId
 }
 
 export default function EditHome() {
-    const [exerciseData, setExerciseData] = useState<dayData[]>(exampleData);
+    const [exerciseData, setExerciseData] = useState<dayData[] | null[]>([]);
+    const [deleteData, setDeleteData] = useState<ObjectId[]>([]);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
@@ -42,9 +43,13 @@ export default function EditHome() {
         fetchData()
     }, [])
     const showDays = () => {
-        return exerciseData.map((day, i) => <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}
-                                                                              index={i}/>
-        </div>)
+        return exerciseData.map((day, i) => {
+            if (day != null) {
+                return <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}
+                                                         index={i} deleteDay={deleteDay}/>
+                </div>
+            }
+        })
     }
     const editDay = (value, index) => {
         setExerciseData((ex) => {
@@ -52,33 +57,23 @@ export default function EditHome() {
             newArray[index] = {...newArray[index], name: value}
             return newArray;
         })
-        console.log(exerciseData)
     }
-    const submitHome = () => {
-        async function submitData() {
-            const validCheck = exerciseData.some((el) => {
-                return (el.name === '')
-            })
-            if (validCheck) {
-                setError({status: 401, statusText: 'Validation Error', data: 'Please Give a Name to All New Lifts'});
-                setLoading(false);
-            } else {
-                let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
-                    method: "PUT",
-                    headers: {'Set-Cookie': document.cookie},
-                    body: JSON.stringify(exerciseData)
-                })
-                if (res.ok) {
-                    router.push('/');
-                } else {
-                    const errorBody = await res.json();
-                    setError({status: res.status, statusText: res.statusText, data: errorBody});
-                    setLoading(false)
-                }
-            }
+    const deleteDay = (index) => {
+
+        console.log("index", index);
+        console.log("exerciseData: ", exerciseData);
+        console.log("exerciseData.length: ", exerciseData.length);
+        if (exerciseData[index]._id) {
+            setDeleteData((data) => [...data, exerciseData[index]._id]);
         }
-        submitData()
+        setExerciseData((data) => {
+            const newArray = [...data];
+            newArray[index] = null;
+            return newArray;
+        })
+
     }
+
     const addDay = () => {
         setExerciseData((data) => {
             const newExercise: dayData = {
@@ -88,6 +83,45 @@ export default function EditHome() {
             return [...data, newExercise];
         })
     }
+    const submitHome = () => {
+        async function submitData() {
+                let requestData = exerciseData;
+                requestData.filter((el)=> {
+                    return el !== null
+                });
+                const validCheck = exerciseData.some((el) => {
+                    return (!el.name || el.name === '')
+                })
+                if (validCheck) {
+                    setError({
+                        status: 401,
+                        statusText: 'Validation Error',
+                        data: 'Please Give a Name to All New Lifts'
+                    });
+                    setLoading(false);
+                } else {
+                    let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+                        method: "PUT",
+                        headers: {'Set-Cookie': document.cookie},
+                        body: JSON.stringify({
+                            edit_data: exerciseData,
+                            delete_data: deleteData
+                        })
+                    })
+                    if (res.ok) {
+                        router.push('/');
+                    } else {
+                        const errorBody = await res.json();
+                        setError({status: res.status, statusText: res.statusText, data: errorBody});
+                        setLoading(false)
+                    }
+                }
+            }
+        }
+
+        submitData()
+    }
+
     if (loading) return <p>Loading...</p>
     return (<div className="text-center">
         <h2 className="text-5xl border-b-2 my-4">Lifts</h2>

@@ -55,7 +55,9 @@ export async function PUT(request: Request) {
             const userIdObject = new ObjectId(userId);
             try {
                 const reqData = await request.json();
-                const payload = reqData.map((el) => {
+                const deleteData = reqData.delete_data;
+                const editData = reqData.edit_data;
+                const payload = editData.map((el) => {
                     if (!el.user_id) {
                         el.user_id = userIdObject;
                     } else if (el.user_id) {
@@ -66,10 +68,10 @@ export async function PUT(request: Request) {
                     }
                     return el;
                 })
-                const bulkOps = payload.map(el => {
+                let bulkOps = payload.map(el => {
                     return el._id ? {
                         updateOne: {
-                            "filter": {_id: el._id},
+                            "filter": {_id: el._id, user_id: el.user_id},
                             "update": {$set: {name: el.name, exerciseData: el.exerciseData}},
                             "upsert": true
                         }
@@ -77,6 +79,14 @@ export async function PUT(request: Request) {
                         insertOne: {"document": {name: el.name, exerciseData: el.exerciseData, user_id: el.user_id}}
                     }
                 })
+                bulkOps.push(...deleteData.map((el) => {
+                    const _id = new ObjectId(el);
+                    return {
+                        deleteOne: {
+                            "filter": {_id},
+                        }
+                    }
+                }))
                 const data = await clientPromise;
                 const db = data.db(process.env.DB_NAME);
                 const day = await db.collection(process.env.DAY_COL).bulkWrite(bulkOps);
