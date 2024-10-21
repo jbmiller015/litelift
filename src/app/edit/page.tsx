@@ -7,14 +7,14 @@ import {usePathname, useRouter} from "next/navigation";
 import {ObjectId} from "bson";
 
 interface dayData {
-    _id?: ObjectId,
-    exerciseData: ObjectId[]
+    _id?: ObjectId | null,
+    exerciseData: (ObjectId|null)[]
     name: string | null,
-    user_id?: ObjectId
+    user_id?: ObjectId | null
 }
 
 export default function EditHome() {
-    const [exerciseData, setExerciseData] = useState<dayData[] | null[]>([]);
+    const [exerciseData, setExerciseData] = useState<(dayData|null)[]>([]);
     const [deleteData, setDeleteData] = useState<ObjectId[]>([]);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
@@ -54,15 +54,11 @@ export default function EditHome() {
     const editDay = (value, index) => {
         setExerciseData((ex) => {
             const newArray = [...ex];
-            newArray[index] = {...newArray[index], name: value}
+            newArray[index] = {...newArray[index], name: value} as dayData;
             return newArray;
         })
     }
     const deleteDay = (index) => {
-
-        console.log("index", index);
-        console.log("exerciseData: ", exerciseData);
-        console.log("exerciseData.length: ", exerciseData.length);
         if (exerciseData[index]._id) {
             setDeleteData((data) => [...data, exerciseData[index]._id]);
         }
@@ -85,11 +81,8 @@ export default function EditHome() {
     }
     const submitHome = () => {
         async function submitData() {
-                let requestData = exerciseData;
-                requestData.filter((el)=> {
-                    return el !== null
-                });
-                const validCheck = exerciseData.some((el) => {
+                const requestData = exerciseData.filter(el => el !== null);
+                const validCheck = requestData.some((el) => {
                     return (!el.name || el.name === '')
                 })
                 if (validCheck) {
@@ -104,7 +97,7 @@ export default function EditHome() {
                         method: "PUT",
                         headers: {'Set-Cookie': document.cookie},
                         body: JSON.stringify({
-                            edit_data: exerciseData,
+                            edit_data: requestData,
                             delete_data: deleteData
                         })
                     })
@@ -116,9 +109,7 @@ export default function EditHome() {
                         setLoading(false)
                     }
                 }
-            }
         }
-
         submitData()
     }
 
