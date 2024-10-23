@@ -3,9 +3,68 @@ import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
 
 import {ObjectId} from "bson";
+import {object} from "prop-types";
+
+const createGETAgg = (objectId: ObjectId, resource: string) => {
+    return ([
+        {
+            '$match': {
+                'user_id': objectId,
+                'name': resource
+            }
+        }, {
+            '$lookup': {
+                'from': 'weightRep',
+                'localField': 'exerciseData',
+                'foreignField': '_id',
+                'as': 'weightRepData'
+            }
+        }, {
+            '$unwind': {
+                'path': '$weightRepData',
+                'includeArrayIndex': 'string',
+                'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$lookup': {
+                'from': 'exercise',
+                'localField': 'weightRepData.exercise_id',
+                'foreignField': '_id',
+                'as': 'exerciseData'
+            }
+        }, {
+            '$unwind': {
+                'path': '$exerciseData',
+                'includeArrayIndex': 'string',
+                'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$group': {
+                '_id': '$_id',
+                'name': {
+                    '$first': '$name'
+                },
+                'user_id': {
+                    '$first': '$user_id'
+                },
+                'exerciseData': {
+                    '$push': {
+                        'weightRepId': '$weightRepData._id',
+                        'exerciseName': '$exerciseData.name',
+                        'w_r': '$weightRepData.w_r'
+                    }
+                }
+            }
+        }
+    ]);
+}
+
 
 export async function GET(request: Request) {
     const headerCookie = request.headers.get('cookie').split('=');
+    const path = request.url.split('/');
+    const resource = path[path.length - 1];
+    console.log(resource);
     const cookieStore = cookies();
     cookieStore.set(headerCookie[0], headerCookie[1]);
     const token = cookieStore.get('token')?.value;
@@ -23,8 +82,14 @@ export async function GET(request: Request) {
                 const data = await clientPromise;
                 const db = data.db(process.env.DB_NAME);
                 const userIdObject = new ObjectId(userId);
-                const day = await db.collection(process.env.DAY_COL).find({user_id: userIdObject}).toArray();
-                return Response.json(day, {statusText: "success", status: 200});
+
+                //Dynamically set user filter
+                console.log(userIdObject, resource);
+                const agg = createGETAgg(userIdObject, resource);
+                console.log(agg)
+                const day = await db.collection(process.env.DAY_COL).aggregate(agg).toArray();
+                //Only return one resource/first match
+                return Response.json(day[0], {statusText: "success", status: 200});
             } catch (e) {
                 console.log(e)
                 return Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});

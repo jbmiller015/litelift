@@ -7,7 +7,7 @@ interface ExProps {
         _id: ObjectId,
         user_id: ObjectId,
         w_r: [[Object], [Object]],
-        name: 'Squat'
+        exerciseName: String
     },
     key: String
 }
@@ -16,14 +16,14 @@ export default function exercise({weightsData = [], key}: ExProps) {
 
     const showWeight = () => {
         return weightsData.w_r.map((wr, i) =>
-            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} complete={wr.complete} fail={wr.fail}/>
+            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} status={wr.status}/>
             </div>
         )
     }
 
     return (
         <div className="p-2 m-2 border border-gray-300 rounded" key={key}>
-            <h3 className="text-3xl font-bold dark:text-white pb-2">{weightsData.name}</h3>
+            <h3 className="text-3xl font-bold dark:text-white pb-2">{weightsData.exerciseName}</h3>
             <div className="flex flew-col flex-wrap gap-2 justify-center">{showWeight()}</div>
         </div>);
 }

@@ -2,15 +2,20 @@ import Weight_Icon from "../assets/icon/weight_icon";
 import Reps_icon from "../assets/icon/reps_icon";
 import {useEffect, useState} from "react";
 
-export default function weight({weight = 0, reps = 1, complete, fail}, props) {
-    const [completed, setCompleted] = useState(complete);
-    const [failed, setFailed] = useState(fail);
+enum StatusCode {
+    complete = "complete",
+    failed = "failed",
+    none = "none"
+}
+
+export default function weight({weight = 0, reps = 1, status}, props) {
+    const [statusCode, setStatusCode] = useState<string>(status);
     const [boxStyle, setBoxStyle] = useState('');
     useEffect(() => {
         if (boxStyle === '') {
-            if (complete) {
+            if (statusCode === StatusCode.complete) {
                 setBoxStyle(completedStyleFlag);
-            } else if (failed) {
+            } else if (statusCode === StatusCode.failed) {
                 setBoxStyle(failedStyleFlag)
             } else {
                 setBoxStyle(noneStyleFlag);
@@ -22,16 +27,15 @@ export default function weight({weight = 0, reps = 1, complete, fail}, props) {
     const noneStyleFlag = 'none';
 
     const setResult = () => {
-        if (!completed && !failed) {
+        if (statusCode === StatusCode.none) {
             setBoxStyle(completedStyleFlag);
-            setCompleted(true);
-        } else if (completed && !failed) {
+            setStatusCode(StatusCode.complete);
+        } else if (statusCode === StatusCode.complete) {
             setBoxStyle(failedStyleFlag);
-            setCompleted(false);
-            setFailed(true);
-        } else if (!completed && failed) {
+            setStatusCode(StatusCode.failed);
+        } else if (statusCode === StatusCode.failed) {
             setBoxStyle(noneStyleFlag);
-            setFailed(false);
+            setStatusCode(StatusCode.none);
         }
     }
 

@@ -43,7 +43,7 @@ export default function Day(props) {
         fetchData()
     }, [])
     const pathname = usePathname()
-    let resource = pathname.slice('/day/'.length).toLowerCase();
+    let resource = pathname.slice('/day/'.length);
 
     return (<div>
             {
