@@ -1,6 +1,7 @@
 import EditWeight from '@/components/EditWeight'
 import Weight from '@/components/Weight'
 import {ObjectId} from "bson";
+import {String} from "postcss-selector-parser";
 
 interface ExProps {
     weightsData: {
@@ -9,16 +10,22 @@ interface ExProps {
         w_r: [[Object], [Object]],
         exerciseName: String
     },
-    key: String
+    key: String,
+    editUpdateData?: (value, index) => void
 }
 
-export default function exercise({weightsData = [], key}: ExProps) {
+export default function exercise({weightsData = [], key, editUpdateData}: ExProps) {
 
     const showWeight = () => {
+
         return weightsData.w_r.map((wr, i) =>
-            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} status={wr.status}/>
+            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} status={wr.status} updateData={(val,index)=>updateData(val,index,i)}
+                                            index={i}/>
             </div>
         )
+    }
+    const updateData = (statusCode, index, wrIndex) => {
+        editUpdateData(statusCode,[index, wrIndex])
     }
 
     return (

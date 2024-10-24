@@ -167,3 +167,31 @@ export async function PUT(request: Request) {
     }
 
 }
+
+export async function POST(request: Request) {
+    const headerCookie = request.headers.get('cookie').split('=');
+    const cookieStore = cookies();
+    cookieStore.set(headerCookie[0], headerCookie[1]);
+    const token = cookieStore.get('token')?.value;
+    try {
+        if (token && token !== 'demo') {
+            const payload = await jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+                if (err) {
+                    console.log(err)
+                    return Response.json('You must be logged in.', {statusText: "Error", status: 401});
+                }
+                return payload.payload;
+            });
+            const {userId} = payload;
+            const userIdObject = new ObjectId(userId);
+            try {
+                const reqData = await request.json();
+                const saveData = reqData.save_data;
+                //prepare to store in history and update w/r
+
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }
+}

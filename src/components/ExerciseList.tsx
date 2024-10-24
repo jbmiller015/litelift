@@ -14,59 +14,50 @@ interface dayData {
 }
 
 export default function ExerciseList({exerciseData = []}) {
-    const [updateData, setUpdateData] = useState<any[]>([]);
+    const [updateData, setUpdateData] = useState<any[]>(exerciseData);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
     const router = useRouter();
-    let resource = pathname.slice('/day/'.length)
+    let resource = pathname.slice('/day/'.length);
 
     const showExercises = () => {
-        return exerciseData.map((exercise, i) => <div key={`exercise${i}`}><Exercise weightsData={exercise}/></div>);
+        return exerciseData.map((exercise, i) => <div key={`exercise${i}`}><Exercise weightsData={exercise}
+                                                                                     editUpdateData={editUpdateData}/>
+        </div>);
     }
 
     const addExercises = () => {
         //setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
     }
 
-    const editUpdateData = (value, index) => {
+    const editUpdateData = (value, indexes: any[]) => {
         setUpdateData((ex) => {
-            const newArray = [...ex];
-            newArray[index] = {...newArray[index], name: value};
+            let newArray = [...ex];
+            newArray[indexes[1]].w_r[indexes[0]].status = value;
             return newArray;
         })
     }
 
     const saveOnExit = () => {
         async function submitData() {
-            const requestData = exerciseData.filter(el => el !== null);
-            const validCheck = requestData.some((el) => {
-                return (!el.name || el.name === '')
-            })
-            if (validCheck) {
-                setError({
-                    status: 401,
-                    statusText: 'Validation Error',
-                    data: 'Please Give a Name to All New Lifts'
-                });
-                setLoading(false);
-            } else {
-                let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
-                    method: "PUT",
-                    headers: {'Set-Cookie': document.cookie},
-                    body: JSON.stringify({
-                        edit_data: requestData,
-                        delete_data: deleteData
-                    })
+            const requestData = updateData.filter(el => el !== null);
+
+            let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+                method: "POST",
+                headers: {'Set-Cookie': document.cookie},
+                body: JSON.stringify({
+                    save_data: requestData
                 })
-                if (res.ok) {
-                    router.push('/');
-                } else {
-                    const errorBody = await res.json();
-                    setError({status: res.status, statusText: res.statusText, data: errorBody});
-                    setLoading(false)
-                }
+            })
+            if (res.ok) {
+                router.push('/');
+            } else {
+                const errorBody = await res.json();
+                setError({status: res.status, statusText: res.statusText, data: errorBody});
+                setLoading(false)
             }
+
         }
 
         submitData()

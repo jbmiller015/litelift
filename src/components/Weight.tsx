@@ -8,7 +8,8 @@ enum StatusCode {
     none = "none"
 }
 
-export default function weight({weight = 0, reps = 1, status}, props) {
+
+export default function weight({weight = 0, reps = 1, status, updateData, index}, props) {
     const [statusCode, setStatusCode] = useState<string>(status);
     const [boxStyle, setBoxStyle] = useState('');
     useEffect(() => {
@@ -21,7 +22,10 @@ export default function weight({weight = 0, reps = 1, status}, props) {
                 setBoxStyle(noneStyleFlag);
             }
         }
-    }, [])
+    }, []);
+    useEffect(() => {
+        updateData(statusCode, index);
+    }, [statusCode]);
     const completedStyleFlag = 'complete';
     const failedStyleFlag = 'fail';
     const noneStyleFlag = 'none';
