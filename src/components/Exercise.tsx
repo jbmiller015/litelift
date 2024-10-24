@@ -11,25 +11,29 @@ interface ExProps {
         exerciseName: String
     },
     key: String,
-    editUpdateData?: (value, index) => void
+    editUpdateData?: (value, index) => void,
+    index?: number
 }
 
-export default function exercise({weightsData = [], key, editUpdateData}: ExProps) {
+export default function exercise({weightsData = [], editUpdateData, index}: ExProps) {
 
     const showWeight = () => {
 
         return weightsData.w_r.map((wr, i) =>
-            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} status={wr.status} updateData={(val,index)=>updateData(val,index,i)}
+            <div key={`weight${i}`}><Weight weight={wr.weight} reps={wr.reps} status={wr.status}
+                                            updateData={(val) => updateData(val, i)}
                                             index={i}/>
             </div>
         )
     }
-    const updateData = (statusCode, index, wrIndex) => {
-        editUpdateData(statusCode,[index, wrIndex])
+    const updateData = (statusCode, ind) => {
+        if (editUpdateData) {
+            editUpdateData(statusCode, [ind, index])
+        }
     }
 
     return (
-        <div className="p-2 m-2 border border-gray-300 rounded" key={key}>
+        <div className="p-2 m-2 border border-gray-300 rounded">
             <h3 className="text-3xl font-bold dark:text-white pb-2">{weightsData.exerciseName}</h3>
             <div className="flex flew-col flex-wrap gap-2 justify-center">{showWeight()}</div>
         </div>);

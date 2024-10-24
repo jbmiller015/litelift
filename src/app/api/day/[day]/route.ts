@@ -49,6 +49,7 @@ const createGETAgg = (objectId: ObjectId, resource: string) => {
                     '$push': {
                         'weightRepId': '$weightRepData._id',
                         'exerciseName': '$exerciseData.name',
+                        'exerciseId': '$exerciseData._id',
                         'w_r': '$weightRepData.w_r'
                     }
                 }
@@ -80,11 +81,8 @@ export async function GET(request: Request) {
                 const data = await clientPromise;
                 const db = data.db(process.env.DB_NAME);
                 const userIdObject = new ObjectId(userId);
-
                 //Dynamically set user filter
-                console.log(userIdObject, resource);
                 const agg = createGETAgg(userIdObject, resource);
-                console.log(agg)
                 const day = await db.collection(process.env.DAY_COL).aggregate(agg).toArray();
                 //Only return one resource/first match
                 return Response.json(day[0], {statusText: "success", status: 200});
@@ -167,7 +165,6 @@ export async function PUT(request: Request) {
 }
 
 export async function POST(request: Request) {
-    console.log(request)
     const headerCookie = request.headers.get('cookie').split('=');
     const cookieStore = cookies();
     cookieStore.set(headerCookie[0], headerCookie[1]);
@@ -189,12 +186,47 @@ export async function POST(request: Request) {
                 const saveData = reqData.save_data;
                 console.log(saveData);
                 //prepare to store in history and update w/r
+                const payload = saveData.map((el) => {
+                    if (!el.user_id) {
+                        el.user_id = userIdObject;
+                    } else if (el.user_id) {
+                        el.user_id = new ObjectId(el.user_id);
+                    }
+                    if (el.weightRepId) {
+                        el.weightRepId = new ObjectId(el.weightRepId);
+                    }
+                    if (el.exerciseId) {
+                        el.exerciseId = new ObjectId(el.exerciseId);
+                    }
+                    return el;
+                })
+                let bulkOps = payload.map(el => {
+                    return {
+                        updateOne: {
+                            "filter": {_id: el.weightRepId, user_id: el.user_id},
+                            "update": {$set: {w_r: el.w_r}},
+                            "upsert": true
+                        }
+                    }
+                })
+                const data = await clientPromise;
+                const db = data.db(process.env.DB_NAME);
+                const w_rData = await db.collection(process.env.WR_COL).bulkWrite(bulkOps);
 
+                const saveResult = await db.collection(process.env.HISTORY_COL).updateOne({user_id: userIdObject}, {
+                    $push: {
+                        "history": {
+                            date: new Date(),
+                            exerciseData: payload,
+                        }
+                    }
+                })
+                return Response.json('Ok', {statusText: "success", status: 200});
             } catch (err) {
                 console.log(err)
             }
         }
-    }catch (err) {
+    } catch (err) {
         console.log(err)
     }
 }

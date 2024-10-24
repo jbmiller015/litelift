@@ -13,7 +13,8 @@ interface dayData {
     user_id?: ObjectId | null
 }
 
-export default function ExerciseList({exerciseData = []}) {
+
+export default function ExerciseList({exerciseData = [], exerciseId}) {
     const [updateData, setUpdateData] = useState<any[]>(exerciseData);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
@@ -23,7 +24,7 @@ export default function ExerciseList({exerciseData = []}) {
 
     const showExercises = () => {
         return exerciseData.map((exercise, i) => <div key={`exercise${i}`}><Exercise weightsData={exercise}
-                                                                                     editUpdateData={editUpdateData}/>
+                                                                                     editUpdateData={editUpdateData} index={i}/>
         </div>);
     }
 
@@ -42,12 +43,12 @@ export default function ExerciseList({exerciseData = []}) {
     const saveOnExit = () => {
         async function submitData() {
             const requestData = updateData.filter(el => el !== null);
-
             let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
                 method: "POST",
                 headers: {'Set-Cookie': document.cookie},
                 body: JSON.stringify({
-                    save_data: requestData
+                    save_data: requestData,
+                    exerciseId: exerciseId
                 })
             })
             if (res.ok) {

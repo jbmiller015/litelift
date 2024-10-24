@@ -30,7 +30,6 @@ export default function Day(props) {
             })
             if (res.ok) {
                 const data = await res.json();
-                console.log(data)
                 setExerciseData(data);
                 setLoading(false);
             } else {
@@ -64,7 +63,7 @@ export default function Day(props) {
             ) : (
                 <div className="text-center">
                     <h2 className="text-5xl my-4">{exerciseData.name}</h2>
-                    <ExerciseList exerciseData={exerciseData.exerciseData}/>
+                    <ExerciseList exerciseData={exerciseData.exerciseData} exerciseId={exerciseData.id} />
                 </div>
             )}
         </div>
