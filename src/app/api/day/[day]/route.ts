@@ -1,9 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
-
 import {ObjectId} from "bson";
-import {object} from "prop-types";
 
 const createGETAgg = (objectId: ObjectId, resource: string) => {
     return ([
@@ -169,6 +167,7 @@ export async function PUT(request: Request) {
 }
 
 export async function POST(request: Request) {
+    console.log(request)
     const headerCookie = request.headers.get('cookie').split('=');
     const cookieStore = cookies();
     cookieStore.set(headerCookie[0], headerCookie[1]);
@@ -186,12 +185,16 @@ export async function POST(request: Request) {
             const userIdObject = new ObjectId(userId);
             try {
                 const reqData = await request.json();
+                console.log(reqData);
                 const saveData = reqData.save_data;
+                console.log(saveData);
                 //prepare to store in history and update w/r
 
             } catch (err) {
                 console.log(err)
             }
         }
+    }catch (err) {
+        console.log(err)
     }
 }
