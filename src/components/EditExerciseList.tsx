@@ -26,7 +26,7 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     let resource = pathname.slice('/day/'.length);
 
     const showExercises = () => {
-        return exerciseData.map((exercise, i) => <EditExercise exerciseData={exercise} editLift={editLift}/>)
+        return exerciseData.map((exercise, i) => <EditExercise exerciseData={exercise} editLift={editLift} deleteLift={deleteLift} addLift={addLift}/>)
     }
 
     const addWeightRep = () => {

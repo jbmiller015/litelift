@@ -101,11 +101,8 @@ export default function EditDay() {
     }
     return (<div className="text-center">
         <h2 className="text-5xl border-b-2 my-4">{exerciseData.name}</h2>
-        <EditExerciseList exerciseData={exerciseData.exerciseData} exerciseId={exerciseData.id} editLift={editLift} addLift={addLift} deleteLift={deleteLift} />
-        <div onClick={() => addLift()}
-             className="btn m-2 w-100 border border-green-400 rounded-lg h-20 text-center text-green-400 bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
-            <Plus_Icon/>
-        </div>
+        <EditExerciseList exerciseData={exerciseData.exerciseData} exerciseId={exerciseData.id} editLift={editLift}
+                          addLift={addLift} deleteLift={deleteLift}/>
         <div onClick={() => submitDay()}
              className="btn m-2 w-100 border border-gray-400 rounded-lg h-20 text-center text-gray-900 bg-green-400 hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
             <h2 className="text-3xl">Done</h2>
