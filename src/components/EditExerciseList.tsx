@@ -16,9 +16,17 @@ interface dayData {
     user_id?: ObjectId | null
 }
 
+interface weightsData {
+    exerciseId: ObjectId,
+    w_r: [{ weight: number, reps: number, status: string }],
+    exerciseName: 'Squat',
+    weightRepId: ObjectId
+}
+
 
 export default function EditExerciseList({exerciseData = [], exerciseId, editLift, addLift, deleteLift}) {
-    const [updateData, setUpdateData] = useState<any[]>(exerciseData);
+    const [updateData, setUpdateData] = useState<weightsData[]>(exerciseData);
+    const [deleteData, setDeleteData] = useState<[{ exerciseId: ObjectId, data: string[] }]>([]);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
@@ -26,10 +34,41 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     let resource = pathname.slice('/day/'.length);
 
     const showExercises = () => {
-        return exerciseData.map((exercise, i) => <EditExercise exerciseData={exercise} editLift={editLift} deleteLift={deleteLift} addLift={addLift}/>)
+        return updateData.map((exercise, i) => <div key={`editExercise${i}`}>
+            <EditExercise weightsData={exercise} editExerciseWR={editExerciseWR} deleteExerciseWR={deleteExerciseWR}
+                          deleteLift={() => {
+                              deleteLift(i);
+                          }} addExerciseWR={addExerciseWR} editExerciseName={editExerciseName}/></div>)
     }
 
-    const addWeightRep = () => {
+
+    const addExerciseWR = (id, value) => {
+        setUpdateData((curr) => {
+            curr.find(el => el.exerciseId === id)?.w_r.push(value);
+            return curr;
+        });
+    }
+    const deleteExerciseWR = (id, index) => {
+        setUpdateData((curr) => {
+            curr.find(el => el.exerciseId === id)?.w_r.splice(index, 1);
+            return curr;
+        });
+        setDeleteData((curr) => {
+            let temp = curr;
+            const result = temp.find(el => el.exerciseId === id)?.data.push(index);
+            if (result === undefined) {
+                temp.push({exerciseId: id, data: [index]});
+            }
+            return temp
+        })
+    }
+    const editExerciseWR = (id, updateData) => {
+        setUpdateData((curr) => {
+            curr.find(el => el.exerciseId === id)?.w_r = updateData;
+            return curr;
+        });
+    }
+    const editExerciseName = () => {
         //setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
     }
 

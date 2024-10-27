@@ -12,7 +12,7 @@ function EditWR({value, editWR, increment, valueType}) {
         <div
             className="btn mv-2 px-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-10"
             id="decrement-button" onClick={() => {
-            const newVal = value - increment;
+            const newVal = value - (valueType === 'weight' ? increment : 1);
             setInputValue(newVal)
             editWR(newVal, valueType);
         }}>
@@ -29,7 +29,7 @@ function EditWR({value, editWR, increment, valueType}) {
         <div
             className="btn mv-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-10"
             id="increment-button" onClick={() => {
-            const newVal = value + increment;
+            const newVal = value + (valueType === 'weight' ? increment : 1);
             setInputValue(newVal)
             editWR(newVal, valueType);
         }}>

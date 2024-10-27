@@ -8,31 +8,42 @@ import {useState} from "react";
 
 interface ExProps {
     weightsData: {
-        _id: ObjectId,
-        user_id: ObjectId,
-        w_r: [[Object], [Object]],
-        name: 'Squat'
+        exerciseId: ObjectId,
+        w_r: [{ weight: number, reps: number, status: string }],
+        exerciseName: 'Squat',
+        weightRepId: ObjectId
     },
-    editLift: any
+    editExerciseWR: any,
+    deleteExerciseWR: any,
+    deleteLift: any,
+    addExerciseWR: any
+    editExerciseName: any
 }
 
-export default function EditExercise({weightsData = {}, editLift, deleteLift, addLift}: ExProps) {
-    const [updateData, setUpdateData] = useState<{}>(weightsData);
+export default function EditExercise({
+                                         weightsData = {},
+                                         editExerciseWR,
+                                         deleteExerciseWR,
+                                         deleteLift,
+                                         addExerciseWR, editExerciseName
+                                     }: ExProps) {
+    const [updateData, setUpdateData] = useState(weightsData.w_r);
 
-    console.log(exerciseData)
+    const [inputVal, setInputVal] = useState<string>(weightsData.exerciseName);
+
     const showWeight = () => {
-        let result = updateData.w_r.map((wr, i) =>
-            <div key={`editWeight${i}`}>
+        let result = updateData.map((wr, i) =>
+            <div key={`editWeight${i + weightsData.exerciseName}`}>
                 <EditWeight weight={wr.weight} reps={wr.reps} editWR={(newVal, valueType) => {
-                    editExerciseWR(i, newVal, valueType)
-                }} deleteWR={}/>
+                    editExerciseProp(i, newVal, valueType)
+                }} deleteWR={() => {
+                    deleteExerciseProp(i)
+                }}/>
             </div>
         )
-        result.push(<div className="relative flex items-center max-w-[11rem] min-w-[10rem]">
-            <div type="button" id="decrement-button" onClick={() => {
-                //const newWeight = weight - 1;
-                //setWeightData(newWeight);
-            }}
+        result.push(<div key={`addWeightsReps${weightsData.exerciseName}`}
+                         className="relative flex items-center max-w-[11rem] min-w-[10rem]">
+            <div type="button" id="decrement-button" onClick={addExerciseProp}
                  className="btn m-2 w-100 border border-green-400 rounded-lg text-center text-green-400
                  bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center h-20 w-[11rem]">
                 <Plus_Icon/>
@@ -41,8 +52,39 @@ export default function EditExercise({weightsData = {}, editLift, deleteLift, ad
         return result;
     }
 
-    const editExerciseWR = (index, newVal, valueType) => {
-        exerciseData.w_r[index] = newVal;
+    const addExerciseProp = () => {
+        const newElement = {weight: 0, reps: 0, status: 'none'}
+        setUpdateData((curr) => [...curr, newElement]);
+        addExerciseWR(weightsData.exerciseId, newElement);
+    }
+
+    const editExerciseProp = (index, newVal, valueType) => {
+        setUpdateData((curr) => {
+            let editArray = curr;
+
+            if (valueType === 'weight') {
+                editArray[index].weight = newVal
+                return [...editArray]
+            } else {
+                editArray[index].reps = newVal
+                return [...editArray]
+            }
+        });
+        editExerciseWR(weightsData.exerciseId, updateData);
+    }
+
+    const deleteExerciseProp = (index) => {
+        setUpdateData((curr) => {
+            let editArray = curr;
+            editArray.splice(index, 1);
+            return [...editArray];
+        });
+        deleteExerciseWR(weightsData.exerciseId, index);
+    }
+
+    const editNameHandler = (e) => {
+        setInputVal(e.target.value);
+        editExerciseName(weightsData.exerciseId, e.target.value);
     }
 
     return (
@@ -52,8 +94,11 @@ export default function EditExercise({weightsData = {}, editLift, deleteLift, ad
                      className="btn mv-2 absolute left-4 w-10 border border-red-400 rounded-lg text-center text-red-400 bg-transparent hover:bg-red-100 hover:text-red-900 dark:text-red-400 cursor-pointer flex flex-col items-center justify-center h-10">
                     <Cross_Icon/>
                 </div>
-                <div
-                    className="justify-self-center text-4xl font-bold dark:text-white pb-2">{exerciseData.exerciseName}</div>
+                <input key={`EditTextLift${weightsData.exerciseId}`}
+                       className="justify-self-center text-center text-4xl font-bold dark:text-white pb-2 bg-transparent w-3/4 md:w-min"
+                       placeholder={inputVal}
+                       value={inputVal}
+                       onChange={(e) => editNameHandler(e)}/>
             </div>
             <div className="flex flew-col flex-wrap gap-2 justify-center">{showWeight()}</div>
         </div>);

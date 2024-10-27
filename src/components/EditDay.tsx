@@ -20,7 +20,7 @@ export default function EditDay({exerciseData, editDay, deleteDay, index}) {
             <input key={`EditTextDay${index}`} className="text-3xl bg-transparent w-3/4 md:w-min"
                    placeholder={inputVal}
                    value={inputVal} onChange={(e) => editDayHandler(e)}
-                   onChange={(e) => editDayHandler(e)}/>
+                  />
             <div onClick={(e) => deleteDayHandler(e)}
                  className="btn w-14 h-14 h-full rounded-lg h-20 text-center bg-red-400 bg-transparent hover:bg-red-100 hover:text-red-900 bg-clip-text">
                 <Cross_Icon/>
