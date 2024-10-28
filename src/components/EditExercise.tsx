@@ -10,7 +10,7 @@ interface ExProps {
     weightsData: {
         exerciseId: ObjectId,
         w_r: [{ weight: number, reps: number, status: string }],
-        exerciseName: 'Squat',
+        exerciseName: string,
         weightRepId: ObjectId
     },
     editExerciseWR: any,
@@ -27,19 +27,23 @@ export default function EditExercise({
                                          deleteLift,
                                          addExerciseWR, editExerciseName
                                      }: ExProps) {
-    const [updateData, setUpdateData] = useState(weightsData.w_r);
+    const [updateData, setUpdateData] = useState<({
+        weight: number,
+        reps: number,
+        status: string
+    } | null)[]>(weightsData.w_r);
 
     const [inputVal, setInputVal] = useState<string>(weightsData.exerciseName);
 
     const showWeight = () => {
-        let result = updateData.map((wr, i) =>
+        let result = updateData.map((wr, i) => wr !== null ?
             <div key={`editWeight${i + weightsData.exerciseName}`}>
-                <EditWeight weight={wr.weight} reps={wr.reps} editWR={(newVal, valueType) => {
+                <EditWeight index={i} weight={wr.weight} reps={wr.reps} editWR={(newVal, valueType) => {
                     editExerciseProp(i, newVal, valueType)
                 }} deleteWR={() => {
                     deleteExerciseProp(i)
                 }}/>
-            </div>
+            </div> : null
         )
         result.push(<div key={`addWeightsReps${weightsData.exerciseName}`}
                          className="relative flex items-center max-w-[11rem] min-w-[10rem]">
@@ -59,25 +63,26 @@ export default function EditExercise({
     }
 
     const editExerciseProp = (index, newVal, valueType) => {
+
         setUpdateData((curr) => {
             let editArray = curr;
-
             if (valueType === 'weight') {
                 editArray[index].weight = newVal
-                return [...editArray]
+                return editArray;
             } else {
                 editArray[index].reps = newVal
-                return [...editArray]
+                return editArray;
             }
         });
         editExerciseWR(weightsData.exerciseId, updateData);
     }
 
     const deleteExerciseProp = (index) => {
+        console.log(index)
         setUpdateData((curr) => {
             let editArray = curr;
-            editArray.splice(index, 1);
-            return [...editArray];
+            editArray[index] = null;
+            return editArray;
         });
         deleteExerciseWR(weightsData.exerciseId, index);
     }
@@ -95,8 +100,8 @@ export default function EditExercise({
                     <Cross_Icon/>
                 </div>
                 <input key={`EditTextLift${weightsData.exerciseId}`}
-                       className="justify-self-center text-center text-4xl font-bold dark:text-white pb-2 bg-transparent w-3/4 md:w-min"
-                       placeholder={inputVal}
+                       className="justify-self-center border rounded-lg text-center text-4xl font-bold dark:text-white pb-2 bg-transparent w-3/4 md:w-min"
+                       placeholder={"Exercise Name"}
                        value={inputVal}
                        onChange={(e) => editNameHandler(e)}/>
             </div>

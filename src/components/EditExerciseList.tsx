@@ -1,31 +1,21 @@
-import Exercise from "@/components/Exercise";
-import editExercise_old from "@/components/EditExercise_old";
 import {useState} from "react";
 import {usePathname, useRouter} from "next/navigation";
 import {ObjectId} from "bson";
 import Plus_Icon from "@/assets/icon/plus_icon";
-import EditWeight from "@/components/EditWeight";
 import EditExercise from "@/components/EditExercise";
 
 //import exerciseData from "/Example_Data.json";
 
-interface dayData {
-    _id?: ObjectId | null,
-    exerciseData: (ObjectId | null)[]
-    name: string | null,
-    user_id?: ObjectId | null
-}
-
 interface weightsData {
-    exerciseId: ObjectId,
+    exerciseId: ObjectId | string,
     w_r: [{ weight: number, reps: number, status: string }] | [],
     exerciseName: string | '',
-    weightRepId: ObjectId
+    weightRepId: ObjectId | string
 }
 
 
-export default function EditExerciseList({exerciseData = [], exerciseId, editLift, addLift, deleteLift}) {
-    const [updateData, setUpdateData] = useState<weightsData[]>(exerciseData);
+export default function EditExerciseList({exerciseData = [], editLift, addLift, deleteLift}) {
+    const [updateData, setUpdateData] = useState<(weightsData | null)[]>(exerciseData);
     const [deleteData, setDeleteData] = useState<[{ exerciseId: ObjectId, data: string[] }]>([]);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
@@ -34,23 +24,39 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     let resource = pathname.slice('/day/'.length);
 
     const showExercises = () => {
-        return updateData.map((exercise, i) => <div key={`editExercise${i}`}>
-            <EditExercise weightsData={exercise} editExerciseWR={editExerciseWR} deleteExerciseWR={deleteExerciseWR}
-                          deleteLift={() => {
-                              deleteLift(i);
-                          }} addExerciseWR={addExerciseWR} editExerciseName={editExerciseName}/></div>)
+        return updateData.map((exercise, i) => {
+            if (exercise != null) {
+                return (<div key={`editExercise${i}`}>
+                    <EditExercise weightsData={exercise} editExerciseWR={editExerciseWR}
+                                  deleteExerciseWR={deleteExerciseWR}
+                                  deleteLift={() => {
+                                      deleteLiftProp(exercise.exerciseId);
+                                  }} addExerciseWR={addExerciseWR} editExerciseName={editExerciseName}/></div>)
+            }
+        })
     }
 
 
+    const deleteLiftProp = (id) => {
+        setUpdateData((curr) => {
+            return curr.map((el) => {
+                if (el && el.exerciseId.toString() === id.toString()) {
+                    return null;
+                } else return el
+            });
+        })
+        deleteLift(id);
+    }
     const addExerciseWR = (id, value) => {
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id)?.w_r.push(value);
+            curr.find(el => el && el.exerciseId.toString() === id.toString())?.w_r.push(value);
             return curr;
         });
     }
     const deleteExerciseWR = (id, index) => {
+        console.log(index, id);
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id).w_r.splice(index, 1);
+            curr.find(el => el && el.exerciseId.toString() === id.toString()).w_r[index] = null;
             return curr;
         });
         setDeleteData((curr) => {
@@ -61,54 +67,36 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
             }
             return temp
         })
+
+        editLift(id, null, deleteData);
     }
     const editExerciseWR = (id, updateData) => {
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id).w_r = updateData;
+            curr.find(el => el && el.exerciseId.toString() === id.toString()).w_r = updateData;
             return curr;
         });
+
+        editLift(id, updateData);
     }
     const editExerciseName = (id, name) => {
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id).exerciseName = name;
+            curr.find(el => el && el.exerciseId.toString() === id.toString()).exerciseName = name;
             return curr;
         });
+        editLift(id, name);
     }
 
     const addLiftProp = () => {
         const newElement: weightsData = {
-            exerciseId: new ObjectId(),
+            exerciseId: new ObjectId().toString(),
             w_r: [],
             exerciseName: '',
-            weightRepId: new ObjectId()
+            weightRepId: new ObjectId().toString()
         }
-        setUpdateData((curr)=>[...curr,newElement]);
+        setUpdateData((curr) => [...curr, newElement]);
         addLift(newElement);
     }
 
-    const saveOnExit = () => {
-        async function submitData() {
-            const requestData = updateData.filter(el => el !== null);
-            let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
-                method: "POST",
-                headers: {'Set-Cookie': document.cookie},
-                body: JSON.stringify({
-                    save_data: requestData,
-                    exerciseId: exerciseId
-                })
-            })
-            if (res.ok) {
-                router.push('/');
-            } else {
-                const errorBody = await res.json();
-                setError({status: res.status, statusText: res.statusText, data: errorBody});
-                setLoading(false)
-            }
-
-        }
-
-        submitData()
-    }
     return (<>
         <div>{showExercises()}</div>
         <div onClick={() => addLiftProp()}
