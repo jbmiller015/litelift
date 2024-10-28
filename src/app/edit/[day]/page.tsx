@@ -22,6 +22,7 @@ export default function EditDay() {
             if (res.ok) {
                 const data = await res.json();
                 setExerciseData(data);
+                console.log(data)
                 setLoading(false);
             } else {
                 const errorBody = await res.json();
@@ -56,14 +57,8 @@ export default function EditDay() {
 
     }
 
-    const addLift = () => {
-        setExerciseData((data) => {
-            const newExercise: dayData = {
-                name: '',
-                exerciseData: [] as ObjectId[]
-            }
-            return [...data, newExercise];
-        })
+    const addLift = (val) => {
+        //
     }
     const submitDay = () => {
         async function submitData() {

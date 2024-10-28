@@ -18,8 +18,8 @@ interface dayData {
 
 interface weightsData {
     exerciseId: ObjectId,
-    w_r: [{ weight: number, reps: number, status: string }],
-    exerciseName: 'Squat',
+    w_r: [{ weight: number, reps: number, status: string }] | [],
+    exerciseName: string | '',
     weightRepId: ObjectId
 }
 
@@ -50,7 +50,7 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     }
     const deleteExerciseWR = (id, index) => {
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id)?.w_r.splice(index, 1);
+            curr.find(el => el.exerciseId === id).w_r.splice(index, 1);
             return curr;
         });
         setDeleteData((curr) => {
@@ -64,20 +64,26 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     }
     const editExerciseWR = (id, updateData) => {
         setUpdateData((curr) => {
-            curr.find(el => el.exerciseId === id)?.w_r = updateData;
+            curr.find(el => el.exerciseId === id).w_r = updateData;
             return curr;
         });
     }
-    const editExerciseName = () => {
-        //setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
+    const editExerciseName = (id, name) => {
+        setUpdateData((curr) => {
+            curr.find(el => el.exerciseId === id).exerciseName = name;
+            return curr;
+        });
     }
 
-    const editUpdateData = (value, indexes: any[]) => {
-        setUpdateData((ex) => {
-            let newArray = [...ex];
-            newArray[indexes[1]].w_r[indexes[0]].status = value;
-            return newArray;
-        })
+    const addLiftProp = () => {
+        const newElement: weightsData = {
+            exerciseId: new ObjectId(),
+            w_r: [],
+            exerciseName: '',
+            weightRepId: new ObjectId()
+        }
+        setUpdateData((curr)=>[...curr,newElement]);
+        addLift(newElement);
     }
 
     const saveOnExit = () => {
@@ -105,7 +111,7 @@ export default function EditExerciseList({exerciseData = [], exerciseId, editLif
     }
     return (<>
         <div>{showExercises()}</div>
-        <div onClick={() => addWeightRep()}
+        <div onClick={() => addLiftProp()}
              className="btn m-2 w-100 border border-green-400 rounded-lg h-20 text-center text-green-400 bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
             <Plus_Icon/>
         </div>
