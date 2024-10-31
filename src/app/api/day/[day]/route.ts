@@ -12,47 +12,10 @@ const createGETAgg = (objectId: ObjectId, resource: string) => {
             }
         }, {
             '$lookup': {
-                'from': 'weightRep',
+                'from': 'exercise',
                 'localField': 'exerciseData',
                 'foreignField': '_id',
-                'as': 'weightRepData'
-            }
-        }, {
-            '$unwind': {
-                'path': '$weightRepData',
-                'includeArrayIndex': 'string',
-                'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$lookup': {
-                'from': 'exercise',
-                'localField': 'weightRepData.exercise_id',
-                'foreignField': '_id',
                 'as': 'exerciseData'
-            }
-        }, {
-            '$unwind': {
-                'path': '$exerciseData',
-                'includeArrayIndex': 'string',
-                'preserveNullAndEmptyArrays': false
-            }
-        }, {
-            '$group': {
-                '_id': '$_id',
-                'name': {
-                    '$first': '$name'
-                },
-                'user_id': {
-                    '$first': '$user_id'
-                },
-                'exerciseData': {
-                    '$push': {
-                        'weightRepId': '$weightRepData._id',
-                        'exerciseName': '$exerciseData.name',
-                        'exerciseId': '$exerciseData._id',
-                        'w_r': '$weightRepData.w_r'
-                    }
-                }
             }
         }
     ]);
@@ -84,7 +47,8 @@ export async function GET(request: Request) {
                 //Dynamically set user filter
                 const agg = createGETAgg(userIdObject, resource);
                 const day = await db.collection(process.env.DAY_COL).aggregate(agg).toArray();
-                //Only return one resource/first match
+                console.log(day)
+                //Return first match
                 return Response.json(day[0], {statusText: "success", status: 200});
             } catch (e) {
                 console.log(e)

@@ -4,9 +4,12 @@ import Plus_Icon from "../assets/icon/plus_icon";
 import Reps_Icon from "../assets/icon/reps_icon";
 import Weight_Icon from "../assets/icon/weight_icon";
 import Cross_Icon from "@/assets/icon/cross_icon";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 function EditWR({value, editWR, increment, valueType, index}) {
+    useEffect(() => {
+        setInputValue(value)
+    }, [value]);
     const [inputValue, setInputValue] = useState<number>(value);
     const [showField, setShowField] = useState<boolean>(false);
     return <div className="relative flex items-center max-w-[11rem]" key={`editWr${valueType + index}`}>
