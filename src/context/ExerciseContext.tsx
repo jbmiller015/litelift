@@ -4,10 +4,16 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import {ObjectId} from 'bson';
 import {usePathname, useRouter} from 'next/navigation';
 
+enum StatusCode {
+    complete = "complete",
+    failed = "failed",
+    none = "none"
+}
+
 interface WeightReps {
     weight: number;
     reps: number;
-    status: string;
+    status: StatusCode;
 }
 
 interface Exercise {
@@ -25,10 +31,12 @@ interface ExData {
 
 interface ExerciseContextProps {
     exerciseData: ExData | null;
+    statusCode: StatusCode;
     loading: boolean;
     error: any;
     fetchExerciseData: () => void;
     submitExerciseData: () => void;
+    saveOnExit: () => void;
     updateWeightReps: (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps') => void;
     addWeightReps: (exerciseId: string | ObjectId) => void;
     deleteWeightReps: (exerciseId: string | ObjectId, index: number) => void;
@@ -43,7 +51,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     const pathname = usePathname();
     const router = useRouter();
     const [exerciseData, setExerciseData] = useState<ExData | null>(null);
-    const [deleteData, setDeleteData] = useState<string>(null);
+    const [deleteData, setDeleteData] = useState<[string]>([]);
     const [changed, setChanged] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<any>(null);
@@ -80,7 +88,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
             const res = await fetch(`/api/day/${resource}/exercise`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
-                body: JSON.stringify({exerciseData: exerciseData, deleteData, day_id: exerciseData._id}),
+                body: JSON.stringify({exerciseData: exerciseData, deleteData}),
             });
             if (!res.ok) throw new Error('Failed to submit data');
             router.push(`/day/${resource}`);
@@ -91,8 +99,32 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         }
     };
 
+    const saveOnExit = () => {
+        async function submitData() {
+            const requestData = updateData.filter(el => el !== null);
+            let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+                method: "POST",
+                headers: {'Set-Cookie': document.cookie},
+                body: JSON.stringify({
+                    save_data: requestData,
+                    exerciseId: exerciseId
+                })
+            })
+            if (res.ok) {
+                router.push('/');
+            } else {
+                const errorBody = await res.json();
+                setError({status: res.status, statusText: res.statusText, data: errorBody});
+                setLoading(false)
+            }
+
+        }
+
+        submitData()
+    }
+
     // Update weight or reps for a specific exercise
-    const updateWeightReps = (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps') => {
+    const updateWeightReps = (exerciseId: string | ObjectId, index: number, updatedValue: number | StatusCode, type: 'weight' | 'reps' | 'status') => {
         console.log(exerciseId, index, updatedValue, type);
         setExerciseData((prev) => ({
             ...prev,
@@ -140,6 +172,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     // Add a new exercise
     const addExercise = () => {
         const newExercise: Exercise = {
+            _id: new ObjectId(),
             w_r: [],
             name: ''
         };
@@ -186,6 +219,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 error,
                 fetchExerciseData,
                 submitExerciseData,
+                saveOnExit,
                 updateWeightReps,
                 addWeightReps,
                 deleteWeightReps,

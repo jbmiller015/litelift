@@ -16,7 +16,7 @@ export default function EditExercise({exercise, deleteExercise}: EditExercisePro
 
     const handleNameChange = (name: string) => {
         setExerciseName(name);
-        editExerciseProp(exercise._id, 'exerciseName', name);
+        editExerciseProp(exercise._id, 'name', name);
     };
     useEffect(() => {
         setExerciseName(exercise.name);

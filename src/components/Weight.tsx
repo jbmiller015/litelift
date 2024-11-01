@@ -2,44 +2,48 @@ import Weight_Icon from "../assets/icon/weight_icon";
 import Reps_icon from "../assets/icon/reps_icon";
 import {useEffect, useState} from "react";
 
+import {useExerciseContext} from '@/context/ExerciseContext';
+import {WeightReps} from '@/context/ExerciseContext';
+
 enum StatusCode {
     complete = "complete",
     failed = "failed",
     none = "none"
 }
 
+interface WeightRepsProps {
+    weightReps: WeightReps;
+    updateData: () => void;
+    index: number;
+}
 
-export default function weight({weight = 0, reps = 1, status, updateData, index}, props) {
-    const [statusCode, setStatusCode] = useState<string>(status);
+export default function Weight({weightReps, updateData, index}: WeightRepsProps) {
+    const {weight, reps, status} = weightReps;
+    console.log(status, weight, reps)
     const [boxStyle, setBoxStyle] = useState('');
     useEffect(() => {
         if (boxStyle === '') {
-            if (statusCode === StatusCode.complete) {
+            if (status === StatusCode.complete) {
                 setBoxStyle(completedStyleFlag);
-            } else if (statusCode === StatusCode.failed) {
+            } else if (status === StatusCode.failed) {
                 setBoxStyle(failedStyleFlag)
             } else {
                 setBoxStyle(noneStyleFlag);
             }
         }
     }, []);
-    useEffect(() => {
-        updateData(statusCode, index);
-    }, [statusCode]);
+
     const completedStyleFlag = 'complete';
     const failedStyleFlag = 'fail';
     const noneStyleFlag = 'none';
 
     const setResult = () => {
-        if (statusCode === StatusCode.none) {
-            setBoxStyle(completedStyleFlag);
-            setStatusCode(StatusCode.complete);
-        } else if (statusCode === StatusCode.complete) {
-            setBoxStyle(failedStyleFlag);
-            setStatusCode(StatusCode.failed);
-        } else if (statusCode === StatusCode.failed) {
-            setBoxStyle(noneStyleFlag);
-            setStatusCode(StatusCode.none);
+        if (status as StatusCode === StatusCode.none) {
+            updateData(StatusCode.complete, index);
+        } else if (status as StatusCode === StatusCode.complete) {
+            updateData(StatusCode.failed, index);
+        } else if (status as StatusCode === StatusCode.failed) {
+            updateData(StatusCode.none, index);
         }
     }
 
