@@ -3,13 +3,7 @@ import Reps_icon from "../assets/icon/reps_icon";
 import {useEffect, useState} from "react";
 
 import {useExerciseContext} from '@/context/ExerciseContext';
-import {WeightReps} from '@/context/ExerciseContext';
-
-enum StatusCode {
-    complete = "complete",
-    failed = "failed",
-    none = "none"
-}
+import {WeightReps, StatusCode} from '@/context/ExerciseContext';
 
 interface WeightRepsProps {
     weightReps: WeightReps;
@@ -19,23 +13,6 @@ interface WeightRepsProps {
 
 export default function Weight({weightReps, updateData, index}: WeightRepsProps) {
     const {weight, reps, status} = weightReps;
-    console.log(status, weight, reps)
-    const [boxStyle, setBoxStyle] = useState('');
-    useEffect(() => {
-        if (boxStyle === '') {
-            if (status === StatusCode.complete) {
-                setBoxStyle(completedStyleFlag);
-            } else if (status === StatusCode.failed) {
-                setBoxStyle(failedStyleFlag)
-            } else {
-                setBoxStyle(noneStyleFlag);
-            }
-        }
-    }, []);
-
-    const completedStyleFlag = 'complete';
-    const failedStyleFlag = 'fail';
-    const noneStyleFlag = 'none';
 
     const setResult = () => {
         if (status as StatusCode === StatusCode.none) {
@@ -48,12 +25,12 @@ export default function Weight({weightReps, updateData, index}: WeightRepsProps)
     }
 
     const getBoxStyle = () => {
-        switch (boxStyle) {
-            case completedStyleFlag:
+        switch (status) {
+            case StatusCode.complete:
                 return "text-green-800 border-green-300 bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800"
-            case failedStyleFlag:
+            case StatusCode.failed:
                 return "text-red-800 border-red-300 bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
-            case noneStyleFlag:
+            case StatusCode.none:
                 return ""
         }
     }

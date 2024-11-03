@@ -22,7 +22,7 @@ export default function Exercise({exercise, index}: ExerciseProps) {
         )
     }
     const updateData = (statusCode, ind) => {
-        updateWeightReps(exercise._id, ind, statusCode, statusCode);
+        updateWeightReps(exercise._id, ind, statusCode, 'status');
     }
 
     return (

@@ -1,30 +1,8 @@
 import Exercise from "@/components/Exercise";
-import editExercise_old from "@/components/EditExercise_old";
-import {useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
-import {ObjectId} from "bson";
 import {useExerciseContext} from '@/context/ExerciseContext';
 
 export default function EditExerciseList() {
     const {exerciseData,editExerciseProp,  saveOnExit} = useExerciseContext();
-    console.log(exerciseData)
-
-    const addExercises = () => {
-        //setExercises([...exercises, <Exercise key={exercises.length + 1}/>]);
-    }
-
-    const editUpdateData = (value, indexes: any[]) => {
-        console.log(value, indexes)
-        setUpdateData((ex) => {
-            let newArray = [...ex];
-            console.log(newArray)
-            console.log(newArray[indexes[1]].w_r[indexes[0]])
-            newArray[indexes[1]].w_r[indexes[0]].status = value;
-            return newArray;
-        })
-
-    }
-
 
     return (<div>
         {exerciseData?.exerciseData.map((exercise, index) => (

@@ -4,7 +4,7 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import {ObjectId} from 'bson';
 import {usePathname, useRouter} from 'next/navigation';
 
-enum StatusCode {
+export enum StatusCode {
     complete = "complete",
     failed = "failed",
     none = "none"
@@ -18,6 +18,7 @@ interface WeightReps {
 
 interface Exercise {
     _id: ObjectId | string | null;
+    user_id: ObjectId | string | null;
     w_r: WeightReps[];
     name: string;
 }
@@ -37,7 +38,7 @@ interface ExerciseContextProps {
     fetchExerciseData: () => void;
     submitExerciseData: () => void;
     saveOnExit: () => void;
-    updateWeightReps: (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps') => void;
+    updateWeightReps: (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps' | 'status') => void;
     addWeightReps: (exerciseId: string | ObjectId) => void;
     deleteWeightReps: (exerciseId: string | ObjectId, index: number) => void;
     addExercise: () => void;
@@ -99,15 +100,17 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         }
     };
 
-    const saveOnExit = () => {
-        async function submitData() {
-            const requestData = updateData.filter(el => el !== null);
+    const saveOnExit = async () => {
+        if (!exerciseData) return;
+        if (!changed) {
+            router.push(`/`);
+        }
+        try {
             let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
                 method: "POST",
-                headers: {'Set-Cookie': document.cookie},
+                headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
                 body: JSON.stringify({
-                    save_data: requestData,
-                    exerciseId: exerciseId
+                    exerciseData
                 })
             })
             if (res.ok) {
@@ -117,15 +120,15 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 setError({status: res.status, statusText: res.statusText, data: errorBody});
                 setLoading(false)
             }
-
+        } catch (err) {
+            setError(err);
+        } finally {
+            setLoading(false);
         }
-
-        submitData()
     }
 
     // Update weight or reps for a specific exercise
     const updateWeightReps = (exerciseId: string | ObjectId, index: number, updatedValue: number | StatusCode, type: 'weight' | 'reps' | 'status') => {
-        console.log(exerciseId, index, updatedValue, type);
         setExerciseData((prev) => ({
             ...prev,
             exerciseData: prev?.exerciseData.map((ex) => {
@@ -173,6 +176,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     const addExercise = () => {
         const newExercise: Exercise = {
             _id: new ObjectId(),
+            user_id: null,
             w_r: [],
             name: ''
         };

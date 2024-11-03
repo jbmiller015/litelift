@@ -146,28 +146,21 @@ export async function POST(request: Request) {
             const userIdObject = new ObjectId(userId);
             try {
                 const reqData = await request.json();
-                console.log(reqData);
-                const saveData = reqData.save_data;
-                console.log(saveData);
-                //prepare to store in history and update w/r
-                const payload = saveData.map((el) => {
+                const payload = reqData?.exerciseData?.exerciseData.map((el) => {
                     if (!el.user_id) {
                         el.user_id = userIdObject;
                     } else if (el.user_id) {
                         el.user_id = new ObjectId(el.user_id);
                     }
-                    if (el.weightRepId) {
-                        el.weightRepId = new ObjectId(el.weightRepId);
-                    }
-                    if (el.exerciseId) {
-                        el.exerciseId = new ObjectId(el.exerciseId);
+                    if (el._id) {
+                        el._id = new ObjectId(el._id);
                     }
                     return el;
                 })
                 let bulkOps = payload.map(el => {
                     return {
                         updateOne: {
-                            "filter": {_id: el.weightRepId, user_id: el.user_id},
+                            "filter": {_id: el._id, user_id: userIdObject},
                             "update": {$set: {w_r: el.w_r}},
                             "upsert": true
                         }
@@ -175,13 +168,16 @@ export async function POST(request: Request) {
                 })
                 const data = await clientPromise;
                 const db = data.db(process.env.DB_NAME);
-                const w_rData = await db.collection(process.env.WR_COL).bulkWrite(bulkOps);
+                const w_rData = await db.collection(process.env.EXCERCISE_COL).bulkWrite(bulkOps);
 
                 const saveResult = await db.collection(process.env.HISTORY_COL).updateOne({user_id: userIdObject}, {
                     $push: {
                         "history": {
-                            date: new Date(),
-                            exerciseData: payload,
+                            $each: [{
+                                date: new Date(),
+                                exerciseData: payload,
+                            }],
+                            $slice: -10
                         }
                     }
                 })
