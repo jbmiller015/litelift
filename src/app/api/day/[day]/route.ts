@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     const token = cookieStore.get('token')?.value;
     try {
         if (token && token !== 'demo') {
-            const payload = await jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+            const payload = await jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET_KEY, async (err, payload) => {
                 if (err) {
                     console.log(err)
                     return Response.json('You must be logged in.', {statusText: "Error", status: 401});
@@ -42,11 +42,11 @@ export async function GET(request: Request) {
             const {userId} = payload;
             try {
                 const data = await clientPromise;
-                const db = data.db(process.env.DB_NAME);
+                const db = data.db(process.env.NEXT_PUBLIC_DB_NAME);
                 const userIdObject = new ObjectId(userId);
                 //Dynamically set user filter
                 const agg = createGETAgg(userIdObject, resource);
-                const day = await db.collection(process.env.DAY_COL).aggregate(agg).toArray();
+                const day = await db.collection(process.env.NEXT_PUBLIC_DAY_COL).aggregate(agg).toArray();
                 console.log(day)
                 //Return first match
                 return Response.json(day[0], {statusText: "success", status: 200});
@@ -69,7 +69,7 @@ export async function PUT(request: Request) {
     const token = cookieStore.get('token')?.value;
     try {
         if (token && token !== 'demo') {
-            const payload = await jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+            const payload = await jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET_KEY, async (err, payload) => {
                 if (err) {
                     console.log(err)
                     return Response.json('You must be logged in.', {statusText: "Error", status: 401});
@@ -113,8 +113,8 @@ export async function PUT(request: Request) {
                     }
                 }))
                 const data = await clientPromise;
-                const db = data.db(process.env.DB_NAME);
-                const day = await db.collection(process.env.DAY_COL).bulkWrite(bulkOps);
+                const db = data.db(process.env.NEXT_PUBLIC_DB_NAME);
+                const day = await db.collection(process.env.NEXT_PUBLIC_DAY_COL).bulkWrite(bulkOps);
                 return Response.json(day, {statusText: "success", status: 200});
             } catch (e) {
                 console.log(e)
@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     const token = cookieStore.get('token')?.value;
     try {
         if (token && token !== 'demo') {
-            const payload = await jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, payload) => {
+            const payload = await jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET_KEY, async (err, payload) => {
                 if (err) {
                     console.log(err)
                     return Response.json('You must be logged in.', {statusText: "Error", status: 401});
@@ -167,10 +167,10 @@ export async function POST(request: Request) {
                     }
                 })
                 const data = await clientPromise;
-                const db = data.db(process.env.DB_NAME);
-                const w_rData = await db.collection(process.env.EXCERCISE_COL).bulkWrite(bulkOps);
+                const db = data.db(process.env.NEXT_PUBLIC_DB_NAME);
+                const w_rData = await db.collection(process.env.NEXT_PUBLIC_EXERCISE_COL).bulkWrite(bulkOps);
 
-                const saveResult = await db.collection(process.env.HISTORY_COL).updateOne({user_id: userIdObject}, {
+                const saveResult = await db.collection(process.env.NEXT_PUBLIC_HISTORY_COL).updateOne({user_id: userIdObject}, {
                     $push: {
                         "history": {
                             $each: [{

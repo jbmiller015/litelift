@@ -38,6 +38,7 @@ interface ExerciseContextProps {
     fetchExerciseData: () => void;
     submitExerciseData: () => void;
     saveOnExit: () => void;
+    resetWRStatus: () => void;
     updateWeightReps: (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps' | 'status') => void;
     addWeightReps: (exerciseId: string | ObjectId) => void;
     deleteWeightReps: (exerciseId: string | ObjectId, index: number) => void;
@@ -144,6 +145,19 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         setChanged(true);
     };
 
+    const resetWRStatus = () => {
+        setExerciseData((prev) => ({
+            ...prev,
+            exerciseData: prev?.exerciseData.map((ex) => {
+                const updatedWR = ex.w_r.map((wr) => {
+                        return {...wr, ['status']: StatusCode.none}
+                    }
+                );
+                return {...ex, w_r: updatedWR};
+            }),
+        }));
+        setChanged(true);
+    }
 
     // Add a new weight/reps entry to a specific exercise
     const addWeightReps = (exerciseId: string | ObjectId) => {
@@ -200,7 +214,6 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         }));
         setChanged(true);
     }
-
     // Delete an exercise by weightRepId
     const deleteExercise = (exerciseId: string | ObjectId) => {
         setExerciseData((prev) => ({
@@ -225,6 +238,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 submitExerciseData,
                 saveOnExit,
                 updateWeightReps,
+                resetWRStatus,
                 addWeightReps,
                 deleteWeightReps,
                 addExercise,

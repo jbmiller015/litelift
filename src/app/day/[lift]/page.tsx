@@ -26,7 +26,7 @@ export default function Day() {
 }
 
 function DayContent() {
-    const {exerciseData, loading, error, submitExerciseData} = useExerciseContext();
+    const {exerciseData, loading, error, saveOnExit, resetWRStatus} = useExerciseContext();
 
     useEffect(() => {
         if (!loading && !exerciseData) {
@@ -40,8 +40,19 @@ function DayContent() {
 
     return (
         <div className="text-center">
-            <h2 className="text-5xl my-4">{exerciseData?.name}</h2>
+            <div className="flex flex-row w-full align-center justify-center relative">
+                <div onClick={() => resetWRStatus()}
+                     className="btn w-14 mt-4 absolute left-2 border-2 border-amber-400 rounded-lg h-12 text-center text-amber-800 dark:text-amber-100 bg-transparent hover:bg-amber-100 hover:text-amber-900 cursor-pointer flex flex-col items-center justify-center">
+                    <h2 className="text-1xl">Reset</h2>
+                </div>
+                <h2 className="text-5xl my-4">{exerciseData?.name}</h2>
+            </div>
             <ExerciseList/>
+            <div onClick={() => saveOnExit()}
+                 className="btn m-2 mt-24 w-100 border-2 border-green-400 rounded-lg h-20 text-center text-green-800 dark:text-green-100 bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
+                <h2 className="text-3xl">Save & Exit</h2>
+            </div>
         </div>
+
     );
 }
