@@ -31,7 +31,7 @@ interface ExData {
 
 interface ExDataRequest {
     exerciseData: ExData,
-    deleteData: string[]
+    delete_data: string[]
 }
 
 export async function PUT(request: Request) {
@@ -56,17 +56,16 @@ export async function PUT(request: Request) {
             }
             if ("payload" in payload) {
                 const {userId} = payload.payload;
-
                 const userIdObject = new ObjectId(userId);
                 try {
-                    const {exerciseData, deleteData} = await request.json() as ExDataRequest;
+                    const {exerciseData, delete_data} = await request.json() as ExDataRequest;
                     exerciseData.exerciseData.forEach(ex => {
                         return ex.w_r = ex.w_r.map((el) => {
                             return {...el, "weight": Number(el.weight), reps: Number(el.reps)}
                         });
                     })
                     console.log(exerciseData)
-                    console.log(deleteData)
+                    console.log(delete_data)
                     //TODO: Create request for:
                     // 1. New Lift: Create new wr record and add to day.
                     // 2. Change Lift Property: Edit existing wr record.
@@ -86,7 +85,7 @@ export async function PUT(request: Request) {
                     });
 
                     console.log(updateExercise)
-                    const deleteExercise = deleteData.map((el) => {
+                    const deleteExercise = delete_data.map((el) => {
                         return {
                             deleteOne: {
                                 "filter": {_id: new ObjectId(el), user_id: userIdObject}
@@ -96,7 +95,7 @@ export async function PUT(request: Request) {
 
                     console.log(deleteExercise);
                     //Day Ops
-                    const deleteExerciseFromDay = deleteData.map((el) => {
+                    const deleteExerciseFromDay = delete_data.map((el) => {
                         return {
                             updateOne: {
                                 "filter": {_id: new ObjectId(exerciseData._id), user_id: userIdObject},

@@ -1,8 +1,6 @@
 'use client';
-import exampleData from '/Example_Data.json'
 import ExerciseList from "@/components/ExerciseList";
-import React, {useState, useEffect} from 'react'
-import {usePathname} from 'next/navigation'
+import React, {useEffect} from 'react'
 import {ExerciseProvider, useExerciseContext} from "@/context/ExerciseContext";
 
 /**
