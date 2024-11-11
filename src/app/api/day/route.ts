@@ -2,9 +2,37 @@ import clientPromise from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
 import {ObjectId} from "bson";
+import {StatusCode} from "@/context/ExerciseContext";
+import {AnyBulkWriteOperation} from "mongodb";
 
 interface JwtPayloadResult {
     payload: { userId: string }
+}
+
+
+interface WeightReps {
+    weight: number;
+    reps: number;
+    status: StatusCode;
+}
+
+interface Exercise {
+    _id: ObjectId | string | undefined;
+    user_id: ObjectId | string | undefined;
+    w_r: WeightReps[];
+    name: string;
+}
+
+interface ExData {
+    exerciseData: Exercise[];
+    name: string;
+    user_id: ObjectId;
+    _id: ObjectId;
+}
+
+interface ExDataPutRequest {
+    exerciseData: ExData,
+    deleteData: string[]
 }
 
 export async function GET(request: Request) {
@@ -54,26 +82,30 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
-    const headerCookie = request.headers.get('cookie').split('=');
+    const headerCookie = request.headers?.get('cookie')?.split('=');
     const cookieStore = cookies();
-    cookieStore.set(headerCookie[0], headerCookie[1]);
+    if (headerCookie) {
+        cookieStore.set(headerCookie[0], headerCookie[1]);
+    }
     const token = cookieStore.get('token')?.value;
-    try {
-        if (token && token !== 'demo') {
-            const payload = await jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET_KEY, async (err, payload) => {
-                if (err) {
-                    console.log(err)
-                    return Response.json('You must be logged in.', {statusText: "Error", status: 401});
-                }
-                return payload.payload;
-            });
-            const {userId} = payload;
-            const userIdObject = new ObjectId(userId);
-            try {
-                const reqData = await request.json();
-                const deleteData = reqData.delete_data;
-                const editData = reqData.edit_data;
-                const payload = editData.map((el) => {
+    if (token && token !== 'demo') {
+        try {
+            const jwt_key = process.env.NEXT_PUBLIC_JWT_SECRET_KEY;
+            if (!jwt_key) {
+                throw new Error("JWT secret key is not set in environment variables");
+            }
+            const payload = await jwt.verify(token, jwt_key) as JwtPayloadResult;
+            if (!payload) {
+                return Response.json('You must be logged in.', {statusText: "Error", status: 401});
+            }
+            if ("payload" in payload) {
+                const {userId} = payload.payload;
+                const userIdObject = new ObjectId(userId);
+                const reqData = await request.json() as ExDataPutRequest;
+                const deleteData = reqData.deleteData;
+                const editData = reqData.exerciseData;
+
+                const exEdit = editData.exerciseData.map((el) => {
                     if (!el.user_id) {
                         el.user_id = userIdObject;
                     } else if (el.user_id) {
@@ -84,37 +116,48 @@ export async function PUT(request: Request) {
                     }
                     return el;
                 })
-                let bulkOps = payload.map(el => {
-                    return el._id ? {
-                        updateOne: {
-                            "filter": {_id: el._id, user_id: el.user_id},
-                            "update": {$set: {name: el.name, exerciseData: el.exerciseData}},
-                            "upsert": true
-                        }
-                    } : {
-                        insertOne: {"document": {name: el.name, exerciseData: el.exerciseData, user_id: el.user_id}}
+                const bulkOps: AnyBulkWriteOperation<Document>[] = [editData._id ? {
+                    updateOne: {
+                        "filter": {_id: editData._id, user_id: editData.user_id},
+                        "update": {$set: {name: editData.name, exerciseData: exEdit}},
+                        "upsert": true
                     }
-                })
-                bulkOps.push(...deleteData.map((el) => {
+                } : {
+                    insertOne: {"document": {name: editData.name, exerciseData: exEdit, user_id: editData.user_id}}
+                }]
+                const deleteDay = deleteData.map((el) => {
                     const _id = new ObjectId(el);
                     return {
                         deleteOne: {
                             "filter": {_id},
                         }
                     }
-                }))
+                })
+                bulkOps.push(...deleteDay);
+                let day = {};
                 const data = await clientPromise;
-                const db = data.db(process.env.NEXT_PUBLIC_DB_NAME);
-                const day = await db.collection(process.env.NEXT_PUBLIC_DAY_COL).bulkWrite(bulkOps);
-                return Response.json(day, {statusText: "success", status: 200});
-            } catch (e) {
-                console.log(e)
-                return Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
-            }
-        }
-    } catch (err) {
-        console.log(err)
-        return Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
-    }
+                const session = data.startSession();
+                await session.withTransaction(async () => {
+                    let dbName: string;
+                    let dayColName: string;
+                    if (process.env.NEXT_PUBLIC_DB_NAME) {
+                        dbName = process.env.NEXT_PUBLIC_DB_NAME;
+                    } else throw new Error('DB name variable not set');
+                    if (process.env.NEXT_PUBLIC_DAY_COL) {
+                        dayColName = process.env.NEXT_PUBLIC_DAY_COL;
+                    } else throw new Error('Day Column variable not set');
 
+                    const db = data.db(dbName);
+                    day = await db.collection(dayColName).bulkWrite(bulkOps);
+                });
+                session.endSession();
+                return Response.json(day, {statusText: "success", status: 200});
+
+            }
+
+        } catch (err) {
+            console.log(err)
+            return Response.json('Unexpected error occurred.', {statusText: "Error", status: 422});
+        }
+    }
 }

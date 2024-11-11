@@ -116,7 +116,6 @@ export async function PUT(request: Request) {
     const headerCookie = request.headers?.get('cookie')?.split('=');
     const path = request.url.split('/');
     const resource = path[path.length - 1];
-    console.log(resource);
     const cookieStore = cookies();
     if (headerCookie) {
         cookieStore.set(headerCookie[0], headerCookie[1]);
