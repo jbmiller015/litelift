@@ -1,14 +1,18 @@
-import exampleData from "/Example_Data.json";
 import Day from "@/components/Day";
 import {redirect} from 'next/navigation'
 import {cookies} from 'next/headers'
 import {Suspense} from "react";
 
 export default async function Home() {
-    const cookieStore = cookies();
-    const token = cookieStore.get('token')?.value;
+    let token;
+    try {
+        const cookieStore = cookies();
+        token = cookieStore.get('token')?.value;
+    } catch (err) {
+        console.log(err)
+    }
 
-    let exerciseData: any[] = exampleData;
+    let exerciseData: unknown[] = [];
     const showDays = () => {
         return exerciseData.map((day, i) => <div key={`day${i}`}><Day exerciseData={day}/></div>)
     }
@@ -24,6 +28,7 @@ export default async function Home() {
             exerciseData = data;
         } else {
             const errorBody = await res.json();
+            console.log(errorBody)
             //setError({status: res.status, statusText: res.statusText, data: errorBody});
             //setLoading(false)
         }

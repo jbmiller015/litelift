@@ -1,5 +1,4 @@
 'use client'
-import exampleData from "/Example_Data.json";
 import EditDay from "@/components/EditDay";
 import Plus_Icon from "@/assets/icon/plus_icon";
 import {useEffect, useState} from "react";
@@ -8,23 +7,23 @@ import {ObjectId} from "bson";
 
 interface dayData {
     _id?: ObjectId | null,
-    exerciseData: (ObjectId|null)[]
+    exerciseData: (ObjectId | null)[]
     name: string | null,
     user_id?: ObjectId | null
 }
 
 export default function EditHome() {
-    const [exerciseData, setExerciseData] = useState<(dayData|null)[]>([]);
+    const [exerciseData, setExerciseData] = useState<(dayData | null)[]>([]);
     const [deleteData, setDeleteData] = useState<ObjectId[]>([]);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(true);
     const pathname = usePathname();
     const router = useRouter();
-    let resource = pathname.slice('/edit/'.length)
+    const resource = pathname.slice('/edit/'.length)
 
     useEffect(() => {
         async function fetchData() {
-            let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+            const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
                 method: "GET",
                 headers: {'Set-Cookie': document.cookie}
             })
@@ -41,6 +40,7 @@ export default function EditHome() {
         }
 
         fetchData()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     const showDays = () => {
         return exerciseData.map((day, i) => {
@@ -51,15 +51,19 @@ export default function EditHome() {
             }
         })
     }
-    const editDay = (value, index) => {
+
+    const editDay = (value: string, index: number) => {
         setExerciseData((ex) => {
             const newArray = [...ex];
             newArray[index] = {...newArray[index], name: value} as dayData;
             return newArray;
         })
     }
-    const deleteDay = (index) => {
-        if (exerciseData[index]._id) {
+    const deleteDay = (index: number) => {
+
+        if (exerciseData && exerciseData[index]?._id) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             setDeleteData((data) => [...data, exerciseData[index]._id]);
         }
         setExerciseData((data) => {
@@ -81,39 +85,41 @@ export default function EditHome() {
     }
     const submitHome = () => {
         async function submitData() {
-                const requestData = exerciseData.filter(el => el !== null);
-                const validCheck = requestData.some((el) => {
-                    return (!el.name || el.name === '')
-                })
-                if (validCheck) {
-                    setError({
-                        status: 401,
-                        statusText: 'Validation Error',
-                        data: 'Please Give a Name to All New Lifts'
-                    });
-                    setLoading(false);
-                } else {
-                    let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
-                        method: "PUT",
-                        headers: {'Set-Cookie': document.cookie},
-                        body: JSON.stringify({
-                            edit_data: requestData,
-                            delete_data: deleteData
-                        })
+            const requestData = exerciseData.filter(el => el !== null);
+            const validCheck = requestData.some((el) => {
+                return (!el.name || el.name === '')
+            })
+            if (validCheck) {
+                setError({
+                    status: 401,
+                    statusText: 'Validation Error',
+                    data: 'Please Give a Name to All New Lifts'
+                });
+                setLoading(false);
+            } else {
+                const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+                    method: "PUT",
+                    headers: {'Set-Cookie': document.cookie},
+                    body: JSON.stringify({
+                        edit_data: requestData,
+                        delete_data: deleteData
                     })
-                    if (res.ok) {
-                        router.push('/');
-                    } else {
-                        const errorBody = await res.json();
-                        setError({status: res.status, statusText: res.statusText, data: errorBody});
-                        setLoading(false)
-                    }
+                })
+                if (res.ok) {
+                    router.push('/');
+                } else {
+                    const errorBody = await res.json();
+                    setError({status: res.status, statusText: res.statusText, data: errorBody});
+                    setLoading(false)
                 }
+            }
         }
+
         submitData()
     }
 
     if (loading) return <p>Loading...</p>
+    if (error) return <p>{`Loading... ${error}`}</p>
     return (<div className="text-center">
         <h2 className="text-5xl border-b-2 my-4">Lifts</h2>
         {showDays()}

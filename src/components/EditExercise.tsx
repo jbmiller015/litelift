@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import EditWeight from '@/components/EditWeight';
 import Cross_Icon from "@/assets/icon/cross_icon";
-import {useExerciseContext} from '@/context/ExerciseContext';
-import {Exercise} from '@/context/ExerciseContext';
+import {Exercise, useExerciseContext} from '@/context/ExerciseContext';
 import Plus_Icon from "@/assets/icon/plus_icon";
 
 interface EditExerciseProps {
@@ -23,7 +22,7 @@ export default function EditExercise({exercise, deleteExercise}: EditExercisePro
     }, [exercise.name]);
 
     const showWeight = () => {
-        let result = exercise.w_r.map((wr, i) => wr !== null ?
+        const result = exercise.w_r.map((wr, i) => wr !== null ?
             <div key={`editWeight${i + exerciseName}`}>
                 <EditWeight index={i} weight={wr.weight} reps={wr.reps} editWR={(newVal, valueType) => {
                     updateWeightReps(exercise._id, i, newVal, valueType);
@@ -47,7 +46,7 @@ export default function EditExercise({exercise, deleteExercise}: EditExercisePro
     return (
         <div className="p-2 m-2 border border-gray-300 rounded">
             <div className="flex items-stretch w-100 justify-center mb-4">
-                <div onClick={(e) => deleteExercise()}
+                <div onClick={() => deleteExercise()}
                      className="btn mv-2 absolute left-4 w-10 border border-red-400 rounded-lg text-center text-red-400 bg-transparent hover:bg-red-100 hover:text-red-900 dark:text-red-400 cursor-pointer flex flex-col items-center justify-center h-10">
                     <Cross_Icon/>
                 </div>

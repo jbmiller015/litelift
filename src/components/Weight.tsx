@@ -1,9 +1,6 @@
 import Weight_Icon from "../assets/icon/weight_icon";
 import Reps_icon from "../assets/icon/reps_icon";
-import {useEffect, useState} from "react";
-
-import {useExerciseContext} from '@/context/ExerciseContext';
-import {WeightReps, StatusCode} from '@/context/ExerciseContext';
+import {StatusCode, WeightReps} from '@/context/ExerciseContext';
 
 interface WeightRepsProps {
     weightReps: WeightReps;

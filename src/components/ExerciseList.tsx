@@ -2,7 +2,7 @@ import Exercise from "@/components/Exercise";
 import {useExerciseContext} from '@/context/ExerciseContext';
 
 export default function EditExerciseList() {
-    const {exerciseData,editExerciseProp,  saveOnExit} = useExerciseContext();
+    const {exerciseData} = useExerciseContext();
 
     return (<div>
         {exerciseData?.exerciseData.map((exercise, index) => (

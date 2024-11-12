@@ -34,7 +34,8 @@ interface ExerciseContextProps {
     exerciseData: ExData | null;
     statusCode: StatusCode;
     loading: boolean;
-    error: any;
+    error: unknown;
+    WeightReps: WeightReps
     fetchExerciseData: () => void;
     submitExerciseData: () => void;
     saveOnExit: () => void;
@@ -43,7 +44,7 @@ interface ExerciseContextProps {
     addWeightReps: (exerciseId: string | ObjectId) => void;
     deleteWeightReps: (exerciseId: string | ObjectId, index: number) => void;
     addExercise: () => void;
-    editExerciseProp: (exerciseId: string | ObjectId, target: string, updatedValue: any) => void;
+    editExerciseProp: (exerciseId: string | ObjectId, target: string, updatedValue: unknown) => void;
     deleteExercise: (exerciseId: string | ObjectId) => void;
 }
 
@@ -56,7 +57,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     const [deleteData, setDeleteData] = useState<[string]>([]);
     const [changed, setChanged] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<any>(null);
+    const [error, setError] = useState<unknown>(null);
 
     const resource = pathname.split('/').pop();
 
@@ -107,7 +108,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
             router.push(`/`);
         }
         try {
-            let res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+            const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
                 body: JSON.stringify({
@@ -226,6 +227,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
 
     useEffect(() => {
         fetchExerciseData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resource]);
 
     return (
@@ -234,6 +236,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 exerciseData,
                 loading,
                 error,
+                WeightReps,
                 fetchExerciseData,
                 submitExerciseData,
                 saveOnExit,

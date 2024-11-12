@@ -1,4 +1,3 @@
-import Edit_Icon from "@/assets/icon/reps_icon";
 import Minus_Icon from "../assets/icon/minus_icon";
 import Plus_Icon from "../assets/icon/plus_icon";
 import Reps_Icon from "../assets/icon/reps_icon";
@@ -55,8 +54,8 @@ interface EditWeightProps {
     weight?: number,
     reps?: number,
     increment?: number,
-    editWR?: any,
-    deleteWR?: any,
+    editWR?: unknown,
+    deleteWR?: unknown,
     index?: number
 }
 

@@ -1,16 +1,13 @@
-import EditWeight from '@/components/EditWeight'
 import Weight from '@/components/Weight'
-import {ObjectId} from "bson";
-import {useExerciseContext} from '@/context/ExerciseContext';
-import {Exercise} from '@/context/ExerciseContext';
+import {Exercise, useExerciseContext} from '@/context/ExerciseContext';
 
 interface ExerciseProps {
     exercise: Exercise;
-    key: String,
+    key: string,
     index: number
 }
 
-export default function Exercise({exercise, index}: ExerciseProps) {
+export default function Exercise({exercise}: ExerciseProps) {
     const {updateWeightReps} = useExerciseContext();
     const showWeight = () => {
 

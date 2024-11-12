@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {useRouter} from 'next/navigation'
 import logo from "@/assets/images/weight-1-svgrepo-com.png";
 import Image from "next/image";
+import Link from "next/link";
 
 
 const AuthForm = () => {
@@ -12,12 +13,13 @@ const AuthForm = () => {
     });
     const [signup, setSignup] = useState(false);
     const [path, setPath] = useState('login');
-    const [error, setError] = useState({});
+    const [error, setError] = useState<({ status: number, statusText: string, data: string } | object)>({});
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         signup ? setPath('signup') : setPath('login');
         setAuthData({
             ...authData,
@@ -25,6 +27,7 @@ const AuthForm = () => {
             password: '',
             confirmPass: ''
         })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [signup])
 
 
@@ -51,7 +54,7 @@ const AuthForm = () => {
         return false
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault();
         const submitError = validate()
 
@@ -83,14 +86,16 @@ const AuthForm = () => {
             </div>
             <div className="my-4 border-b border-gray-300"/>
             {
+                /* eslint-disable no-alert, no-console */
                 Object.keys(error).length !== 0 ? (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                            <span className="absolute top-0 right-0 p-2" onClick={() => setError({})}>Close
-                            </span>
-                        <div className="font-bold">{error.status + ": " + error.statusText}</div>
+                 <span className="absolute top-0 right-0 p-2" onClick={() => setError({})}>Close
+                 </span>
+                        <div className="font-bold">{error?.status ? error.status : "" + ": " + error.statusText}</div>
                         <div><p>{error.data}</p></div>
                     </div>
                 ) : null
+                /* eslint-enable no-alert */
             }
 
             {loading ? (
@@ -174,10 +179,10 @@ const AuthForm = () => {
                     </div>
                     <div className="mt-2 text-center text-gray-600">
                         {"Wanna take a look around? Check out the "}
-                        <a href="/"
-                           className="text-blue-500 hover:text-blue-700">
+                        <Link href="/"
+                              className="text-blue-500 hover:text-blue-700">
                             demo
-                        </a>
+                        </Link>
                         {"."}
                     </div>
                 </div>

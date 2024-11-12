@@ -1,9 +1,9 @@
 import clientPromise from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
-import {ObjectId} from "bson";
+import {Document, ObjectId} from "bson";
 import {StatusCode} from "@/context/ExerciseContext";
-import {AnyBulkWriteOperation} from "mongodb";
+import {AnyBulkWriteOperation, BulkWriteResult, UpdateResult} from "mongodb";
 
 interface JwtPayloadResult {
     payload: { userId: string }
@@ -114,8 +114,6 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
     const headerCookie = request.headers?.get('cookie')?.split('=');
-    const path = request.url.split('/');
-    const resource = path[path.length - 1];
     const cookieStore = cookies();
     if (headerCookie) {
         cookieStore.set(headerCookie[0], headerCookie[1]);
@@ -151,17 +149,17 @@ export async function PUT(request: Request) {
                 const editDayData = exData.filter(el => el._id);
                 const saveDayData = exData.filter(el => !el._id);
 
-                const editDay = editDayData.map((el) => {
+                const editDay: AnyBulkWriteOperation<Document>[] = editDayData.map((el) => {
                     return {
                         updateOne: {
                             "filter": {_id: el._id, user_id: el.user_id},
                             "update": {$set: {name: el.name, exerciseData: el.exerciseData}},
                             "upsert": true
                         }
-                    }
+                    } as unknown as AnyBulkWriteOperation<Document>
                 })
 
-                const saveDay = saveDayData.map(el => {
+                const saveDay: AnyBulkWriteOperation<Document>[] = saveDayData.map(el => {
                     return {
                         insertOne: {
                             "document": {
@@ -170,18 +168,19 @@ export async function PUT(request: Request) {
                                 user_id: el.user_id
                             }
                         }
-                    }
+                    } as unknown as AnyBulkWriteOperation<Document>
                 })
 
-                const deleteDay = delete_data.map((el) => {
+                const deleteDay: AnyBulkWriteOperation<Document>[] = delete_data.map((el) => {
                     const _id = new ObjectId(el);
                     return {
                         deleteOne: {
                             "filter": {_id},
                         }
-                    }
+                    } as unknown as AnyBulkWriteOperation<Document>
                 })
                 const bulkOps: AnyBulkWriteOperation<Document>[] = [];
+
                 bulkOps.push(...editDay, ...saveDay, ...deleteDay);
                 let day = {};
                 const data = await clientPromise;
@@ -197,6 +196,8 @@ export async function PUT(request: Request) {
                     } else throw new Error('Day Column variable not set');
 
                     const db = data.db(dbName);
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     day = await db.collection(dayColName).bulkWrite(bulkOps);
                 });
                 session.endSession();
@@ -256,41 +257,49 @@ export async function POST(request: Request) {
                 })
                 const data = await clientPromise;
                 const session = data.startSession();
-                let w_rData;
-                let saveResult;
+                let w_rData: BulkWriteResult;
+                let saveResult: UpdateResult<Document>;
                 await session.withTransaction(async () => {
-                    let dbName: string;
-                    let exerciseColName: string;
-                    let historyColName: string;
-                    if (process.env.NEXT_PUBLIC_DB_NAME) {
-                        dbName = process.env.NEXT_PUBLIC_DB_NAME;
-                    } else throw new Error('DB name variable not set');
-                    if (process.env.NEXT_PUBLIC_DAY_COL) {
-                        exerciseColName = process.env.NEXT_PUBLIC_EXERCISE_COL;
-                    } else throw new Error('Exercise Column variable not set');
-                    if (process.env.NEXT_PUBLIC_DAY_COL) {
-                        historyColName = process.env.NEXT_PUBLIC_HISTORY_COL;
-                    } else throw new Error('History Column variable not set');
-                    const db = data.db(dbName);
-                    w_rData = await db.collection(exerciseColName).bulkWrite(bulkOps);
+                        let dbName: string;
+                        let exerciseColName: string | undefined;
+                        let historyColName: string | undefined;
+                        if (process.env.NEXT_PUBLIC_DB_NAME) {
+                            dbName = process.env.NEXT_PUBLIC_DB_NAME;
+                        } else throw new Error('DB name variable not set');
+                        if (process.env.NEXT_PUBLIC_DAY_COL) {
+                            exerciseColName = process.env.NEXT_PUBLIC_EXERCISE_COL;
+                        } else throw new Error('Exercise Column variable not set');
+                        if (process.env.NEXT_PUBLIC_DAY_COL) {
+                            historyColName = process.env.NEXT_PUBLIC_HISTORY_COL;
+                        } else throw new Error('History Column variable not set');
+                        if (dbName && exerciseColName && historyColName) {
+                            const db = data.db(dbName);
+                            // eslint-disable-next-line no-use-before-define
+                            w_rData = await db.collection(exerciseColName).bulkWrite(bulkOps);
 
-                    saveResult = await db.collection(historyColName).updateOne({user_id: userIdObject}, {
-                        $push: {
-                            "history": {
-                                $each: [{
-                                    date: new Date(),
-                                    exerciseData: exData,
-                                }],
-                                $slice: -10
-                            }
+                            saveResult = await db.collection(historyColName).updateOne({user_id: userIdObject}, {
+
+                                // eslint-disable-next-line no-use-before-define
+                                $push: {
+                                    "history": {
+                                        $each: [{
+                                            date: new Date(),
+                                            exerciseData: exData,
+                                        }],
+                                        $slice: -10
+                                    }
+                                }
+                            });
                         }
-                    });
-                });
-                session.endSession();
-                return Response.json({w_rData, saveResult}, {statusText: "success", status: 200});
 
+                        session.endSession();
+                        return Response.json({w_rData, saveResult}, {statusText: "success", status: 200});
+
+                    }
+                );
             }
-        } catch (err) {
+        } catch
+            (err) {
             console.log(err)
         }
     }

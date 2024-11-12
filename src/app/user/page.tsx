@@ -1,6 +1,4 @@
 'use client'
-import exampleData from "/Example_Data.json";
-import {ObjectId} from "bson";
 
 export default function User() {
 
