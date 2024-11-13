@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
-import {ObjectId} from "bson";
+import {Document, ObjectId} from "bson";
 import {StatusCode} from "@/context/ExerciseContext";
 import {AnyBulkWriteOperation} from "mongodb";
 
@@ -116,22 +116,27 @@ export async function PUT(request: Request) {
                     }
                     return el;
                 })
-                const bulkOps: AnyBulkWriteOperation<Document>[] = [editData._id ? {
+                const isUpdate = editData._id ? ({
                     updateOne: {
-                        "filter": {_id: editData._id, user_id: editData.user_id},
-                        "update": {$set: {name: editData.name, exerciseData: exEdit}},
-                        "upsert": true
+                        filter: {_id: editData._id, user_id: editData.user_id},
+                        update: {$set: {name: editData.name, exerciseData: exEdit}},
+                        upsert: true
                     }
-                } : {
-                    insertOne: {"document": {name: editData.name, exerciseData: exEdit, user_id: editData.user_id}}
-                }]
+                }) : ({
+                    insertOne: {
+                        document: {name: editData.name, exerciseData: exEdit, user_id: editData.user_id},
+
+                    }
+                })
+
+                const bulkOps: AnyBulkWriteOperation<Document>[] = [isUpdate as AnyBulkWriteOperation<Document>];
                 const deleteDay = deleteData.map((el) => {
                     const _id = new ObjectId(el);
                     return {
                         deleteOne: {
                             "filter": {_id},
                         }
-                    }
+                    } as AnyBulkWriteOperation<Document>
                 })
                 bulkOps.push(...deleteDay);
                 let day = {};

@@ -10,13 +10,13 @@ export enum StatusCode {
     none = "none"
 }
 
-interface WeightReps {
+export interface WeightReps {
     weight: number;
     reps: number;
     status: StatusCode;
 }
 
-interface Exercise {
+export interface Exercise {
     _id: ObjectId | string | null;
     user_id: ObjectId | string | null;
     w_r: WeightReps[];
@@ -40,12 +40,12 @@ interface ExerciseContextProps {
     submitExerciseData: () => void;
     saveOnExit: () => void;
     resetWRStatus: () => void;
-    updateWeightReps: (exerciseId: string | ObjectId, index: number, updatedValue: number, type: 'weight' | 'reps' | 'status') => void;
-    addWeightReps: (exerciseId: string | ObjectId) => void;
-    deleteWeightReps: (exerciseId: string | ObjectId, index: number) => void;
+    updateWeightReps: (exerciseId: string | ObjectId | null, index: number, updatedValue: number | string, type: "weight" | "reps" | "status") => void;
+    addWeightReps: (exerciseId: string | ObjectId | null) => void;
+    deleteWeightReps: (exerciseId: string | ObjectId | null, index: number) => void;
     addExercise: () => void;
-    editExerciseProp: (exerciseId: string | ObjectId, target: string, updatedValue: unknown) => void;
-    deleteExercise: (exerciseId: string | ObjectId) => void;
+    editExerciseProp: (exerciseId: string | ObjectId | null, target: string, updatedValue: unknown) => void;
+    deleteExercise: (exerciseId: string | ObjectId | null) => void;
 }
 
 const ExerciseContext = createContext<ExerciseContextProps | undefined>(undefined);

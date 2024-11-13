@@ -13,7 +13,11 @@ const AuthForm = () => {
     });
     const [signup, setSignup] = useState(false);
     const [path, setPath] = useState('login');
-    const [error, setError] = useState<({ status: number, statusText: string, data: string } | object)>({});
+    const [error, setError] = useState<({
+        status?: string | number | undefined,
+        statusText?: string | undefined,
+        data?: string | undefined
+    } | undefined)>(undefined);
     const [loading, setLoading] = useState(false);
     const router = useRouter();
 
@@ -33,7 +37,10 @@ const AuthForm = () => {
 
     const validate = () => {
         if (authData.email === '') {
-            setError({status: 'Missing Field', statusText: 'Please provide email'})
+            setError((prev) => {
+                    return {...prev, status: 'Missing Field', statusText: 'Please provide email'}
+                }
+            )
             return true
         }
 
@@ -86,12 +93,12 @@ const AuthForm = () => {
             </div>
             <div className="my-4 border-b border-gray-300"/>
             {
-                /* eslint-disable no-alert, no-console */
-                Object.keys(error).length !== 0 ? (
+                error ? (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                 <span className="absolute top-0 right-0 p-2" onClick={() => setError({})}>Close
+                 <span className="absolute top-0 right-0 p-2" onClick={() => setError(undefined)}>Close
                  </span>
-                        <div className="font-bold">{error?.status ? error.status : "" + ": " + error.statusText}</div>
+                        <div
+                            className="font-bold">{error?.status ? error.status : "" + ": " + error.statusText}</div>
                         <div><p>{error.data}</p></div>
                     </div>
                 ) : null

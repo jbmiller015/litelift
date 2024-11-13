@@ -5,7 +5,16 @@ import Weight_Icon from "../assets/icon/weight_icon";
 import Cross_Icon from "@/assets/icon/cross_icon";
 import {useEffect, useState} from "react";
 
-function EditWR({value, editWR, increment, valueType, index}) {
+
+interface EditWeightRepsProps {
+    value: number,
+    increment: number,
+    editWR: (newVal: number | string, valueType: "weight" | "reps" | "status") => void,
+    valueType: "weight" | "reps" | "status"
+    index: number
+}
+
+function EditWR({value, editWR, increment, valueType, index}: EditWeightRepsProps) {
     useEffect(() => {
         setInputValue(value)
     }, [value]);
@@ -16,9 +25,10 @@ function EditWR({value, editWR, increment, valueType, index}) {
              className="btn mv-2 px-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-10"
              id="decrement-button" onClick={() => {
             setShowField(true)
-            const newVal = inputValue - (valueType === 'weight' ? increment : 1);
+
+            const newVal = inputValue - (valueType && valueType === 'weight' ? increment : 1);
             setInputValue(newVal)
-            editWR(newVal, valueType, index);
+            editWR(newVal, valueType);
         }}>
             <Minus_Icon/>
         </div>
@@ -33,8 +43,8 @@ function EditWR({value, editWR, increment, valueType, index}) {
             <input type="text" id="reps-input" data-input-counter min="1" key={`editWrManual${valueType + index}`}
                    aria-describedby="helper-text-explanation"
                    className="btn text-xl font-bold mv-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-20"
-                   placeholder={value} value={inputValue} required onChange={(e) => {
-                setInputValue(e.target.value as number)
+                   placeholder={value.toString()} value={inputValue} required onChange={(e) => {
+                setInputValue(Number.parseInt(e.target.value))
                 editWR(e.target.value, valueType);
             }}/>}
         <div key={`editWrPlus${valueType + index}`}
@@ -50,16 +60,16 @@ function EditWR({value, editWR, increment, valueType, index}) {
     </div>;
 }
 
-interface EditWeightProps {
-    weight?: number,
-    reps?: number,
-    increment?: number,
-    editWR?: unknown,
-    deleteWR?: unknown,
-    index?: number
+interface EditWRProps {
+    weight: number,
+    reps: number,
+    increment: number,
+    editWR: (newVal: number | string, valueType: "weight" | "reps" | "status") => void,
+    deleteWR: () => void,
+    index: number
 }
 
-export default function EditWeight({weight = 0, reps = 1, increment = 5, editWR, deleteWR, index}: EditWeightProps) {
+export default function EditWeight({weight = 0, reps = 1, increment = 5, editWR, deleteWR, index}: EditWRProps) {
 
 
     return (<div className="flex flex-col items-center p-2">

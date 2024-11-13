@@ -177,7 +177,7 @@ export async function PUT(request: Request) {
                         deleteOne: {
                             "filter": {_id},
                         }
-                    } as unknown as AnyBulkWriteOperation<Document>
+                    } as AnyBulkWriteOperation
                 })
                 const bulkOps: AnyBulkWriteOperation<Document>[] = [];
 
@@ -246,14 +246,14 @@ export async function POST(request: Request) {
                     return el;
                 });
 
-                const bulkOps = exData.map(el => {
+                const bulkOps: AnyBulkWriteOperation<Document>[] = exData.map(el => {
                     return {
                         updateOne: {
                             "filter": {_id: el._id, user_id: userIdObject},
                             "update": {$set: {w_r: el.w_r}},
                             "upsert": true
                         }
-                    }
+                    } as AnyBulkWriteOperation
                 })
                 const data = await clientPromise;
                 const session = data.startSession();
@@ -274,12 +274,10 @@ export async function POST(request: Request) {
                         } else throw new Error('History Column variable not set');
                         if (dbName && exerciseColName && historyColName) {
                             const db = data.db(dbName);
-                            // eslint-disable-next-line no-use-before-define
+
                             w_rData = await db.collection(exerciseColName).bulkWrite(bulkOps);
 
                             saveResult = await db.collection(historyColName).updateOne({user_id: userIdObject}, {
-
-                                // eslint-disable-next-line no-use-before-define
                                 $push: {
                                     "history": {
                                         $each: [{
@@ -288,7 +286,7 @@ export async function POST(request: Request) {
                                         }],
                                         $slice: -10
                                     }
-                                }
+                                } as Document
                             });
                         }
 

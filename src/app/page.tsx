@@ -2,6 +2,15 @@ import Day from "@/components/Day";
 import {redirect} from 'next/navigation'
 import {cookies} from 'next/headers'
 import {Suspense} from "react";
+import {ObjectId} from "bson";
+
+
+interface ExData {
+    exerciseData: ObjectId[];
+    name: string;
+    user_id: ObjectId;
+    _id: ObjectId;
+}
 
 export default async function Home() {
     let token;
@@ -12,9 +21,9 @@ export default async function Home() {
         console.log(err)
     }
 
-    let exerciseData: unknown[] = [];
+    let exerciseData: ExData[] = [];
     const showDays = () => {
-        return exerciseData.map((day, i) => <div key={`day${i}`}><Day exerciseData={day}/></div>)
+        return exerciseData.map((day: ExData, i) => <div key={`day${i}`}><Day exerciseData={day}/></div>)
     }
     if (!token) {
         redirect('/welcome');

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import EditWeight from '@/components/EditWeight';
 import Cross_Icon from "@/assets/icon/cross_icon";
-import {Exercise, useExerciseContext} from '@/context/ExerciseContext';
+import {Exercise, useExerciseContext, WeightReps} from '@/context/ExerciseContext';
 import Plus_Icon from "@/assets/icon/plus_icon";
 
 interface EditExerciseProps {
@@ -22,18 +22,19 @@ export default function EditExercise({exercise, deleteExercise}: EditExercisePro
     }, [exercise.name]);
 
     const showWeight = () => {
-        const result = exercise.w_r.map((wr, i) => wr !== null ?
+        const result = exercise.w_r.map((wr: WeightReps, i) => wr !== null ?
             <div key={`editWeight${i + exerciseName}`}>
-                <EditWeight index={i} weight={wr.weight} reps={wr.reps} editWR={(newVal, valueType) => {
-                    updateWeightReps(exercise._id, i, newVal, valueType);
-                }} deleteWR={() => {
+                <EditWeight index={i} weight={wr.weight} reps={wr.reps}
+                            editWR={(newVal: number | string, valueType: "weight" | "reps" | "status") => {
+                                updateWeightReps(exercise._id, i, newVal, valueType);
+                            }} deleteWR={() => {
                     deleteWeightReps(exercise._id, i);
                 }}/>
             </div> : null
         )
         result.push(<div key={`addWeightsReps${exerciseName}`}
                          className="relative flex items-center max-w-[11rem] min-w-[10rem]">
-            <div type="button" id="decrement-button" onClick={() => addWeightReps(exercise._id)}
+            <div id="decrement-button" onClick={() => addWeightReps(exercise._id)}
                  className="btn m-2 w-100 border border-green-400 rounded-lg text-center text-green-400
                  bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center h-20 w-[11rem]">
                 <Plus_Icon/>

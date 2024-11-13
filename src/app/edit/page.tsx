@@ -43,7 +43,7 @@ export default function EditHome() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     const showDays = () => {
-        return exerciseData.map((day, i) => {
+        return exerciseData.map((day: dayData | null, i: number) => {
             if (day != null) {
                 return <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}
                                                          index={i} deleteDay={deleteDay}/>
