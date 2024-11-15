@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import jwt from "jsonwebtoken";
 import {cookies} from 'next/headers'
-import {ObjectId} from "bson";
+import {Document, ObjectId} from "bson";
 import {StatusCode} from "@/context/ExerciseContext";
 import {AnyBulkWriteOperation} from "mongodb";
 
@@ -109,7 +109,7 @@ export async function PUT(request: Request) {
                                 "update": {$set: {name: el.name, w_r: el.w_r}, $setOnInsert: {user_id: userIdObject}},
                                 "upsert": true
                             }
-                        }
+                        } as unknown as AnyBulkWriteOperation<Document>
                     });
 
                     console.log(updateExercise)
@@ -118,7 +118,7 @@ export async function PUT(request: Request) {
                             deleteOne: {
                                 "filter": {_id: new ObjectId(el), user_id: userIdObject}
                             }
-                        }
+                        } as unknown as AnyBulkWriteOperation<Document>
                     });
 
                     console.log(deleteExercise);
@@ -129,7 +129,7 @@ export async function PUT(request: Request) {
                                 "filter": {_id: new ObjectId(exerciseData._id), user_id: userIdObject},
                                 "update": {$pull: {exerciseData: new ObjectId(el)}}
                             }
-                        }
+                        } as unknown as AnyBulkWriteOperation<Document>
                     });
                     console.log(deleteExerciseFromDay)
                     const updateExerciseInDay = {
@@ -144,9 +144,7 @@ export async function PUT(request: Request) {
                                 }
                             }
                         }
-                    }
-                    console.log(updateExerciseInDay);
-
+                    } as AnyBulkWriteOperation<Document>
 
                     const exerciseBulkOps: AnyBulkWriteOperation<Document>[] = [];
                     const dayBulkOps: AnyBulkWriteOperation<Document>[] = [];
@@ -170,11 +168,7 @@ export async function PUT(request: Request) {
                             exerciseColName = process.env.NEXT_PUBLIC_EXERCISE_COL;
                         } else throw new Error('Exercise Column variable not set');
                         const db = data.db(dbName);
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-expect-error
                         day = await db.collection(dayColName).bulkWrite(dayBulkOps);
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-expect-error
                         exercise = await db.collection(exerciseColName).bulkWrite(exerciseBulkOps);
                     });
                     session.endSession();
