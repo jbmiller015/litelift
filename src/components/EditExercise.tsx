@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import EditWeight from '@/components/EditWeight';
 import Cross_Icon from "@/assets/icon/cross_icon";
-import {Exercise, useExerciseContext, WeightReps} from '@/context/ExerciseContext';
+import {Exercise, StatusCode, useExerciseContext, WeightReps} from '@/context/ExerciseContext';
 import Plus_Icon from "@/assets/icon/plus_icon";
 
 interface EditExerciseProps {
@@ -25,11 +25,11 @@ export default function EditExercise({exercise, deleteExercise}: EditExercisePro
         const result = exercise.w_r.map((wr: WeightReps, i) => wr !== null ?
             <div key={`editWeight${i + exerciseName}`}>
                 <EditWeight index={i} weight={wr.weight} reps={wr.reps}
-                            editWR={(newVal: number | string, valueType: "weight" | "reps" | "status") => {
+                            editWR={(newVal: number | StatusCode, valueType: "weight" | "reps" | "status") => {
                                 updateWeightReps(exercise._id, i, newVal, valueType);
                             }} deleteWR={() => {
                     deleteWeightReps(exercise._id, i);
-                }}/>
+                }} increment={5}/>
             </div> : null
         )
         result.push(<div key={`addWeightsReps${exerciseName}`}

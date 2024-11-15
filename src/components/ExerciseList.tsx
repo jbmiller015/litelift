@@ -1,4 +1,4 @@
-import Exercise from "@/components/Exercise";
+import ExerciseView from "@/components/ExerciseView";
 import {useExerciseContext} from '@/context/ExerciseContext';
 
 export default function EditExerciseList() {
@@ -8,7 +8,7 @@ export default function EditExerciseList() {
         {exerciseData?.exerciseData.map((exercise, index) => (
             exercise ? (
                 <div key={`editExercise${index}`}>
-                    <Exercise exercise={exercise}/>
+                    <ExerciseView exercise={exercise} index={index}/>
                 </div>
             ) : null
         ))}

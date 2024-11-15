@@ -1,13 +1,12 @@
 import Weight from '@/components/Weight'
-import {Exercise, useExerciseContext} from '@/context/ExerciseContext';
+import {Exercise, StatusCode, useExerciseContext} from '@/context/ExerciseContext';
 
 interface ExerciseProps {
     exercise: Exercise;
-    key: string,
     index: number
 }
 
-export default function Exercise({exercise}: ExerciseProps) {
+export default function ExerciseView({exercise}: ExerciseProps) {
     const {updateWeightReps} = useExerciseContext();
     const showWeight = () => {
 
@@ -18,7 +17,7 @@ export default function Exercise({exercise}: ExerciseProps) {
             </div>
         )
     }
-    const updateData = (statusCode, ind) => {
+    const updateData = (statusCode: StatusCode, ind: number) => {
         updateWeightReps(exercise._id, ind, statusCode, 'status');
     }
 

@@ -32,19 +32,18 @@ interface ExData {
 
 interface ExerciseContextProps {
     exerciseData: ExData | null;
-    statusCode: StatusCode;
+    statusCode: typeof StatusCode;
     loading: boolean;
     error: unknown;
-    WeightReps: WeightReps
     fetchExerciseData: () => void;
     submitExerciseData: () => void;
     saveOnExit: () => void;
     resetWRStatus: () => void;
-    updateWeightReps: (exerciseId: string | ObjectId | null, index: number, updatedValue: number | string, type: "weight" | "reps" | "status") => void;
+    updateWeightReps: (exerciseId: string | ObjectId | null, index: number, updatedValue: number | StatusCode, type: "weight" | "reps" | "status") => void;
     addWeightReps: (exerciseId: string | ObjectId | null) => void;
     deleteWeightReps: (exerciseId: string | ObjectId | null, index: number) => void;
     addExercise: () => void;
-    editExerciseProp: (exerciseId: string | ObjectId | null, target: string, updatedValue: unknown) => void;
+    editExerciseProp: (exerciseId: string | ObjectId | null, target: string, updatedValue: WeightReps | string) => void;
     deleteExercise: (exerciseId: string | ObjectId | null) => void;
 }
 
@@ -54,7 +53,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     const pathname = usePathname();
     const router = useRouter();
     const [exerciseData, setExerciseData] = useState<ExData | null>(null);
-    const [deleteData, setDeleteData] = useState<[string]>([]);
+    const [deleteData, setDeleteData] = useState<[string] | []>([]);
     const [changed, setChanged] = useState<boolean>(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<unknown>(null);
@@ -130,7 +129,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     }
 
     // Update weight or reps for a specific exercise
-    const updateWeightReps = (exerciseId: string | ObjectId, index: number, updatedValue: number | StatusCode, type: 'weight' | 'reps' | 'status') => {
+    const updateWeightReps = (exerciseId: string | ObjectId | null, index: number, updatedValue: number | StatusCode, type: 'weight' | 'reps' | 'status') => {
         setExerciseData((prev) => ({
             ...prev,
             exerciseData: prev?.exerciseData.map((ex) => {
@@ -142,7 +141,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 }
                 return ex;
             }),
-        }));
+        } as ExData));
         setChanged(true);
     };
 
@@ -156,12 +155,12 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 );
                 return {...ex, w_r: updatedWR};
             }),
-        }));
+        } as ExData));
         setChanged(true);
     }
 
     // Add a new weight/reps entry to a specific exercise
-    const addWeightReps = (exerciseId: string | ObjectId) => {
+    const addWeightReps = (exerciseId: string | ObjectId | null) => {
         setExerciseData((prev) => ({
             ...prev,
             exerciseData: prev?.exerciseData.map((ex) =>
@@ -169,12 +168,12 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                     ? {...ex, w_r: [...ex.w_r, {weight: 0, reps: 0, status: 'none'}]}
                     : ex
             ),
-        }));
+        } as ExData));
         setChanged(true);
     };
 
     // Delete a weight/reps entry by index from a specific exercise
-    const deleteWeightReps = (exerciseId: string | ObjectId, index: number) => {
+    const deleteWeightReps = (exerciseId: string | ObjectId | null, index: number) => {
         console.log(exerciseId, index);
         setExerciseData((prev) => ({
             ...prev,
@@ -183,7 +182,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                     ? {...ex, w_r: ex.w_r.filter((_, idx) => idx !== index)}
                     : ex
             ),
-        }));
+        } as ExData));
         setChanged(true);
     };
 
@@ -198,30 +197,29 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         setExerciseData((prev) => ({
             ...prev,
             exerciseData: [...(prev?.exerciseData || []), newExercise],
-        }));
+        } as ExData));
         setChanged(true);
     };
 
-    const editExerciseProp = (exerciseId, target, value) => {
+    const editExerciseProp = (exerciseId: string | ObjectId | null, target: string, updatedValue: WeightReps | string) => {
         setExerciseData((prev) => ({
             ...prev,
             exerciseData: prev?.exerciseData.map((ex) => {
                 if (ex && ex._id === exerciseId) {
-                    const updatedWR = ex[target] = value;
-                    return {...ex, [target]: updatedWR};
+                    return {...ex, [target]: updatedValue};
                 }
                 return ex;
             }),
-        }));
+        } as ExData));
         setChanged(true);
     }
     // Delete an exercise by weightRepId
-    const deleteExercise = (exerciseId: string | ObjectId) => {
+    const deleteExercise = (exerciseId: string | ObjectId | null) => {
         setExerciseData((prev) => ({
             ...prev,
-            exerciseData: prev?.exerciseData.filter((ex) => ex?._id !== exerciseId),
-        }));
-        setDeleteData((curr) => [...curr, exerciseId]);
+            exerciseData: prev?.exerciseData?.filter((ex) => ex?._id !== exerciseId),
+        } as ExData));
+        setDeleteData((curr) => [...curr, exerciseId] as [string]);
         setChanged(true);
     };
 
@@ -234,9 +232,9 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
         <ExerciseContext.Provider
             value={{
                 exerciseData,
+                statusCode: StatusCode,
                 loading,
                 error,
-                WeightReps,
                 fetchExerciseData,
                 submitExerciseData,
                 saveOnExit,

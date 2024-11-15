@@ -4,7 +4,7 @@ import {StatusCode, WeightReps} from '@/context/ExerciseContext';
 
 interface WeightRepsProps {
     weightReps: WeightReps;
-    updateData: () => void;
+    updateData: (val: StatusCode, i: number) => void;
     index: number;
 }
 

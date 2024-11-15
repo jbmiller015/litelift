@@ -4,12 +4,13 @@ import Reps_Icon from "../assets/icon/reps_icon";
 import Weight_Icon from "../assets/icon/weight_icon";
 import Cross_Icon from "@/assets/icon/cross_icon";
 import {useEffect, useState} from "react";
+import {StatusCode} from "@/context/ExerciseContext";
 
 
 interface EditWeightRepsProps {
     value: number,
     increment: number,
-    editWR: (newVal: number | string, valueType: "weight" | "reps" | "status") => void,
+    editWR: (newVal: number | StatusCode, valueType: "weight" | "reps" | "status") => void,
     valueType: "weight" | "reps" | "status"
     index: number
 }
@@ -45,7 +46,7 @@ function EditWR({value, editWR, increment, valueType, index}: EditWeightRepsProp
                    className="btn text-xl font-bold mv-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-20"
                    placeholder={value.toString()} value={inputValue} required onChange={(e) => {
                 setInputValue(Number.parseInt(e.target.value))
-                editWR(e.target.value, valueType);
+                editWR(Number.parseInt(e.target.value), valueType);
             }}/>}
         <div key={`editWrPlus${valueType + index}`}
              className="btn mv-2 border border-gray-400 rounded-lg text-center text-gray-400 bg-transparent hover:bg-gray-100 hover:text-gray-900 cursor-pointer flex flex-col items-center justify-center h-12 w-10"
@@ -64,7 +65,7 @@ interface EditWRProps {
     weight: number,
     reps: number,
     increment: number,
-    editWR: (newVal: number | string, valueType: "weight" | "reps" | "status") => void,
+    editWR: (newVal: number | StatusCode, valueType: "weight" | "reps" | "status") => void,
     deleteWR: () => void,
     index: number
 }

@@ -34,15 +34,43 @@ interface ExDataRequest {
     delete_data: string[]
 }
 
+async function getCookieData(key: string) {
+    const cookieData = cookies().get(key)?.value;
+    return new Promise<string | undefined>((resolve) =>
+        setTimeout(() => {
+            resolve(cookieData)
+        }, 1000)
+    )
+}
+
+async function setCookieData(key: string, value: string) {
+    const cookieData = cookies().set(key, value);
+    return new Promise((resolve) =>
+        setTimeout(() => {
+            resolve(cookieData)
+        }, 1000)
+    )
+}
+
 export async function PUT(request: Request) {
     const cookieHeader: string | null = request.headers.get('cookie');
     if (!cookieHeader) {
         return Response.json('You must be logged in.', {statusText: "Error", status: 401});
     }
     const headerCookie: string[] = cookieHeader.split('=');
-    const cookieStore = cookies();
-    cookieStore.set(headerCookie[0], headerCookie[1]);
-    const token = cookieStore.get('token')?.value;
+    if (headerCookie) {
+        try {
+            await setCookieData(headerCookie[0], headerCookie[1]);
+        } catch (err) {
+            console.log(err)
+        }
+    }
+    let token;
+    try {
+        token = await getCookieData('token');
+    } catch (err) {
+        console.log(err)
+    }
     const data = await clientPromise;
     try {
         if (token && token !== 'demo') {
