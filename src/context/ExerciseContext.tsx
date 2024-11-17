@@ -107,7 +107,11 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
             router.push(`/`);
         }
         try {
-            const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+            const base = process.env.NEXT_PUBLIC_BASE_URL;
+            if (!base) {
+                throw new Error("Base URL not set in environment variables");
+            }
+            const res = await fetch(`${base}/api/day/${resource}`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
                 body: JSON.stringify({

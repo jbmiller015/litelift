@@ -23,7 +23,11 @@ export default function EditHome() {
 
     useEffect(() => {
         async function fetchData() {
-            const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+            const base = process.env.NEXT_PUBLIC_BASE_URL;
+            if (!base) {
+                throw new Error("Base URL not set in environment variables");
+            }
+            const res = await fetch(`${base}/api/day/${resource}`, {
                 method: "GET",
                 headers: {'Set-Cookie': document.cookie}
             })
@@ -97,7 +101,11 @@ export default function EditHome() {
                 });
                 setLoading(false);
             } else {
-                const res = await fetch(`http://localhost:3000/api/day/${resource}`, {
+                const base = process.env.NEXT_PUBLIC_BASE_URL;
+                if (!base) {
+                    throw new Error("Base URL not set in environment variables");
+                }
+                const res = await fetch(`${base}/api/day/${resource}`, {
                     method: "PUT",
                     headers: {'Set-Cookie': document.cookie},
                     body: JSON.stringify({

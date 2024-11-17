@@ -28,7 +28,11 @@ export default async function Home() {
     if (!token) {
         redirect('/welcome');
     } else {
-        const res = await fetch('http://localhost:3000/api/day/', {
+        const base = process.env.NEXT_PUBLIC_BASE_URL;
+        if (!base) {
+            throw new Error("Base URL not set in environment variables");
+        }
+        const res = await fetch(`${base}/api/day/`, {
             method: "GET",
             headers: {'cookie': `token=${token}`}
         })

@@ -1,0 +1,58 @@
+# apphosting.yaml
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  # maxInstances: 100
+  # concurrency: 80
+  # cpu: 1
+  # memoryMiB: 512
+
+  # Environment variables and secrets.
+  env:
+    # Environment variables from .env.production
+    - variable: NEXT_PUBLIC_SENTRY_DSN
+      value: ""
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_MONGODB_URI
+      value: litelift_mongo_uri
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_DB_NAME
+      value: litelift
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_EXERCISE_COL
+      value: exercise
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_USER_COL
+      value: user
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_DAY_COL
+      value: day
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_HISTORY_COL
+      value: history
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_JWT_SECRET_KEY
+      value: JwtSecretKey
+      availability:
+        - BUILD
+        - RUNTIME
+    - variable: NEXT_PUBLIC_BASE_URL
+      value: litelift_base_url
+      availability:
+        - BUILD
+        - RUNTIME
