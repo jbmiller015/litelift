@@ -25,19 +25,20 @@ export default async function Home() {
     const showDays = () => {
         return exerciseData.map((day: ExData, i) => <div key={`day${i}`}><Day exerciseData={day}/></div>)
     }
-    const base = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!base) {
-        throw new Error("Base URL not set in environment variables");
-    }
     if (!token) {
-        redirect(`${base}/welcome`);
+        redirect('/welcome');
     } else {
+        const base = process.env.NEXT_PUBLIC_BASE_URL;
+        if (!base) {
+            throw new Error("Base URL not set in environment variables");
+        }
         const res = await fetch(`${base}/api/day/`, {
             method: "GET",
             headers: {'cookie': `token=${token}`}
         })
         if (res.ok) {
-            exerciseData = await res.json();
+            const data = await res.json();
+            exerciseData = data;
         } else {
             const errorBody = await res.json();
             console.log(errorBody)

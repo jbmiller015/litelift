@@ -24,8 +24,7 @@ export default function EditDay({exerciseData, editDay, deleteDay, index}: EditD
         setInputVal(e)
         editDay(e, index);
     }
-    const deleteDayHandler = (e: unknown) => {
-        console.log(e)
+    const deleteDayHandler = () => {
         setInputVal('');
         deleteDay(index);
     }
@@ -36,7 +35,7 @@ export default function EditDay({exerciseData, editDay, deleteDay, index}: EditD
                    placeholder={inputVal}
                    value={inputVal} onChange={(e) => editDayHandler(e.target.value)}
             />
-            <div onClick={(e) => deleteDayHandler(e)}
+            <div onClick={() => deleteDayHandler()}
                  className="btn w-14 h-14 h-full rounded-lg h-20 text-center bg-red-400 bg-transparent hover:bg-red-100 hover:text-red-900 bg-clip-text">
                 <Cross_Icon/>
             </div>

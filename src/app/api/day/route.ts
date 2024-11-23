@@ -31,8 +31,8 @@ interface ExData {
 }
 
 interface ExDataPutRequest {
-    exerciseData: ExData,
-    deleteData: string[]
+    edit_data: ExData[],
+    delete_data: string[]
 }
 
 async function getCookieData(key: string) {
@@ -127,11 +127,10 @@ export async function PUT(request: Request) {
             if ("payload" in payload) {
                 const {userId} = payload.payload;
                 const userIdObject = new ObjectId(userId);
-                const reqData = await request.json() as ExDataPutRequest;
-                const deleteData = reqData.deleteData;
-                const editData = reqData.exerciseData;
+                const {delete_data, edit_data} = await request.json() as ExDataPutRequest;
 
-                const exEdit = editData.exerciseData.map((el) => {
+
+                const exEdit = edit_data.map((el) => {
                     if (!el.user_id) {
                         el.user_id = userIdObject;
                     } else if (el.user_id) {
@@ -142,21 +141,23 @@ export async function PUT(request: Request) {
                     }
                     return el;
                 })
-                const isUpdate = editData._id ? ({
-                    updateOne: {
-                        filter: {_id: editData._id, user_id: editData.user_id},
-                        update: {$set: {name: editData.name, exerciseData: exEdit}},
-                        upsert: true
-                    }
-                }) : ({
-                    insertOne: {
-                        document: {name: editData.name, exerciseData: exEdit, user_id: editData.user_id},
+                const isUpdate: AnyBulkWriteOperation<Document>[] = exEdit.map((el) => {
+                    return el._id ? ({
+                        updateOne: {
+                            filter: {_id: el._id, user_id: el.user_id},
+                            update: {$set: {name: el.name, exerciseData: el.exerciseData}},
+                            upsert: true
+                        }
+                    } as unknown as AnyBulkWriteOperation<Document>) : ({
+                        insertOne: {
+                            document: {name: el.name, exerciseData: el.exerciseData, user_id: el.user_id},
 
-                    }
+                        }
+                    } as unknown as AnyBulkWriteOperation<Document>)
                 })
 
-                const bulkOps: AnyBulkWriteOperation<Document>[] = [isUpdate as AnyBulkWriteOperation<Document>];
-                const deleteDay = deleteData.map((el) => {
+                const bulkOps: AnyBulkWriteOperation<Document>[] = [...isUpdate];
+                const deleteDay = delete_data.map((el) => {
                     const _id = new ObjectId(el);
                     return {
                         deleteOne: {

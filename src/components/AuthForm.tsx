@@ -66,15 +66,18 @@ const AuthForm = () => {
         const submitError = validate()
 
         if (!submitError) {
+            const base = process.env.NEXT_PUBLIC_BASE_URL;
+            if (!base) {
+                throw new Error("Base URL not set in environment variables");
+            }
             setLoading(true);
             const bodyVal = JSON.stringify({...authData});
-            const res = await fetch(`/api/auth/${path}`, {
+            const res = await fetch(`${base}/api/auth/${path}`, {
                 method: "POST",
                 body: bodyVal
             })
             if (res.ok) {
-                setLoading(false);
-                router.push('/');
+                router.push(`${base}/exercises`);
             } else {
                 const errorBody = await res.json();
                 setError({status: res.status, statusText: res.statusText, data: errorBody});
@@ -86,7 +89,7 @@ const AuthForm = () => {
 
     return (
         <div className="flex flex-col justify-center items-center p-4 md:p-12">
-            <h2 className="text-7xl py-5">LiteLift</h2>
+            <h2 className="text-7xl py-5">Lite-Lift</h2>
             <div
                 className="bg-clip-content p-4 dark:border-gray-500 border-gray-500 border-4 border-dashed rounded-full">
                 <Image src={logo} alt="heroLogo" height="200" width="200"/>

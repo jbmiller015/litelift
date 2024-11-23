@@ -63,8 +63,12 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     // Fetch exercise data from API
     const fetchExerciseData = async () => {
         try {
+            const base = process.env.NEXT_PUBLIC_BASE_URL;
+            if (!base) {
+                throw new Error("Base URL not set in environment variables");
+            }
             setLoading(true);
-            const res = await fetch(`/api/day/${resource}`, {
+            const res = await fetch(`${base}/api/day/${resource}`, {
                 method: 'GET',
                 headers: {'Set-Cookie': document.cookie},
             });
@@ -82,18 +86,22 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
     // Submit exercise data to API
     const submitExerciseData = async () => {
         if (!exerciseData) return;
+        const base = process.env.NEXT_PUBLIC_BASE_URL;
+        if (!base) {
+            throw new Error("Base URL not set in environment variables");
+        }
         if (!changed) {
-            router.push(`/day/${resource}`);
+            router.push(`${base}/day/${resource}`);
         }
         try {
             setLoading(true);
-            const res = await fetch(`/api/day/${resource}/exercise`, {
+            const res = await fetch(`${base}/api/day/${resource}/exercise`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
                 body: JSON.stringify({exerciseData: exerciseData, deleteData}),
             });
             if (!res.ok) throw new Error('Failed to submit data');
-            router.push(`/day/${resource}`);
+            router.push(`${base}/day/${resource}`);
         } catch (err) {
             setError(err);
         } finally {
@@ -103,14 +111,14 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
 
     const saveOnExit = async () => {
         if (!exerciseData) return;
+        const base = process.env.NEXT_PUBLIC_BASE_URL;
+        if (!base) {
+            throw new Error("Base URL not set in environment variables");
+        }
         if (!changed) {
-            router.push(`/`);
+            router.push(`${base}/exercises`);
         }
         try {
-            const base = process.env.NEXT_PUBLIC_BASE_URL;
-            if (!base) {
-                throw new Error("Base URL not set in environment variables");
-            }
             const res = await fetch(`${base}/api/day/${resource}`, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json', 'Cookie': document.cookie},
@@ -119,7 +127,7 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
                 })
             })
             if (res.ok) {
-                router.push('/');
+                router.push(`${base}/exercises`);
             } else {
                 const errorBody = await res.json();
                 setError({status: res.status, statusText: res.statusText, data: errorBody});

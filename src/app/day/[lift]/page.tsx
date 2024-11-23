@@ -3,18 +3,6 @@ import ExerciseList from "@/components/ExerciseList";
 import React, {useEffect} from 'react'
 import {ExerciseProvider, useExerciseContext} from "@/context/ExerciseContext";
 
-/**
- type ExcerciseData = {
- name: string
- stargazers_count: number
- }
-
- export async function getStaticProps() {
- const res = await fetch('127.0.0.1:3000/api/exercise/')
- const exerciseData = await res.json()
- return {props: {exerciseData}}
- }*/
-
 export default function Day() {
     return (
         <ExerciseProvider>

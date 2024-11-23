@@ -2,7 +2,7 @@
 import EditDay from "@/components/EditDay";
 import Plus_Icon from "@/assets/icon/plus_icon";
 import {useEffect, useState} from "react";
-import {usePathname, useRouter} from "next/navigation";
+import {useRouter} from "next/navigation";
 import {ObjectId} from "bson";
 
 interface dayData {
@@ -15,43 +15,40 @@ interface dayData {
 export default function EditHome() {
     const [exerciseData, setExerciseData] = useState<(dayData | null)[]>([]);
     const [deleteData, setDeleteData] = useState<ObjectId[]>([]);
-    const [error, setError] = useState({});
+    const [error, setError] = useState<object | null>(null);
     const [loading, setLoading] = useState(true);
-    const pathname = usePathname();
+
     const router = useRouter();
-    const resource = pathname.slice('/edit/'.length)
 
     useEffect(() => {
-        async function fetchData() {
-            const base = process.env.NEXT_PUBLIC_BASE_URL;
-            if (!base) {
-                throw new Error("Base URL not set in environment variables");
-            }
-            const res = await fetch(`${base}/api/day/${resource}`, {
-                method: "GET",
-                headers: {'Set-Cookie': document.cookie}
-            })
-            if (res.ok) {
-                const data = await res.json();
-                console.log(data)
-                setExerciseData(data);
-                setLoading(false);
-            } else {
-                const errorBody = await res.json();
-                setError({status: res.status, statusText: res.statusText, data: errorBody});
-                setLoading(false)
-            }
-        }
 
-        fetchData()
+        const base = process.env.NEXT_PUBLIC_BASE_URL;
+        if (!base) {
+            throw new Error("Base URL not set in environment variables");
+        }
+        fetch(`${base}/api/day/`, {
+            method: "GET",
+            headers: {'cookie': document.cookie}
+        }).then(async (res) => {
+            const data = await res.json();
+            console.log(data)
+            setExerciseData(data as unknown as (dayData | null)[]);
+            setLoading(false);
+        }).catch((err) => {
+            const errorBody = err.json();
+            setError({status: err.status, statusText: err.statusText, data: errorBody});
+            setLoading(false)
+        });
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     const showDays = () => {
         return exerciseData.map((day: dayData | null, i: number) => {
             if (day != null) {
-                return <div key={`editDay${i}`}><EditDay exerciseData={day} editDay={editDay}
-                                                         index={i} deleteDay={deleteDay}/>
-                </div>
+                return (<div key={`editDay${i}`}>
+                    <EditDay exerciseData={day} editDay={editDay}
+                             index={i} deleteDay={deleteDay}/>
+                </div>);
             }
         })
     }
@@ -105,7 +102,7 @@ export default function EditHome() {
                 if (!base) {
                     throw new Error("Base URL not set in environment variables");
                 }
-                const res = await fetch(`${base}/api/day/${resource}`, {
+                const res = await fetch(`${base}/api/day/`, {
                     method: "PUT",
                     headers: {'Set-Cookie': document.cookie},
                     body: JSON.stringify({
@@ -114,7 +111,7 @@ export default function EditHome() {
                     })
                 })
                 if (res.ok) {
-                    router.push('/');
+                    router.push(`${base}/exercises`);
                 } else {
                     const errorBody = await res.json();
                     setError({status: res.status, statusText: res.statusText, data: errorBody});
@@ -127,7 +124,8 @@ export default function EditHome() {
     }
 
     if (loading) return <p>Loading...</p>
-    if (error) return <p>{`Loading... ${error}`}</p>
+    if (error) return <p>{`Error: ${error}`}</p>
+
     return (<div className="text-center">
         <h2 className="text-5xl border-b-2 my-4">Lifts</h2>
         {showDays()}

@@ -14,10 +14,10 @@ export default function Menu() {
         viewName = pathname.slice('/day/'.length);
         console.log(viewName)
     }
-    if(pathname.startsWith('/welcome'))
+    if (pathname.startsWith('/welcome'))
         return null;
     return (<div className="w-100 h-14 border rounded-lg m-2 flex flex-row items-center justify-between">
-            <Link href={'/'}>
+            <Link href={'/exercises'}>
                 <div
                     className="btn w-14 h-full bg-gray-200 dark:bg-transparent rounded text-black dark:text-white text-center">
                     <Home_Icon/></div>
