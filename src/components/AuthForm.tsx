@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const AuthForm = () => {
     const [authData, setAuthData] = useState({
-        email: '',
+        name: '',
         password: '',
         confirmPass: ''
     });
@@ -27,7 +27,7 @@ const AuthForm = () => {
         signup ? setPath('signup') : setPath('login');
         setAuthData({
             ...authData,
-            email: '',
+            name: '',
             password: '',
             confirmPass: ''
         })
@@ -36,9 +36,9 @@ const AuthForm = () => {
 
 
     const validate = () => {
-        if (authData.email === '') {
+        if (authData.name === '') {
             setError((prev) => {
-                    return {...prev, status: 'Missing Field', statusText: 'Please provide email'}
+                    return {...prev, status: 'Missing Field', statusText: 'Please provide login name'}
                 }
             )
             return true
@@ -72,6 +72,7 @@ const AuthForm = () => {
             }
             setLoading(true);
             const bodyVal = JSON.stringify({...authData});
+            console.log(bodyVal)
             const res = await fetch(`${base}/api/auth/${path}`, {
                 method: "POST",
                 body: bodyVal
@@ -117,18 +118,18 @@ const AuthForm = () => {
                     <form className="space-y-4">
                         <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 text-black">
                             <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                                     Username
                                 </label>
                                 <div className="relative">
                                     <input
-                                        id="email"
+                                        id="name"
                                         type="text"
                                         placeholder="Username"
-                                        value={authData.email}
+                                        value={authData.name}
                                         autoCapitalize="none"
                                         autoCorrect="false"
-                                        onChange={e => setAuthData({...authData, email: e.target.value})}
+                                        onChange={e => setAuthData({...authData, name: e.target.value})}
                                         className="pl-10 p-3 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                 </div>

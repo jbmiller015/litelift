@@ -8,11 +8,9 @@ import {usePathname} from 'next/navigation';
 
 export default function Menu() {
     const pathname = usePathname();
-    console.log(pathname)
     let viewName = ''
     if (pathname.startsWith('/day/')) {
         viewName = pathname.slice('/day/'.length);
-        console.log(viewName)
     }
     if (pathname.startsWith('/welcome'))
         return null;

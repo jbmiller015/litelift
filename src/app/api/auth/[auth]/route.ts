@@ -19,9 +19,9 @@ interface User {
 
 async function login(req: Request) {
     const body = await req.json();
-    const {email, password} = body;
+    const {name, password} = body;
 
-    if (!email || !password)
+    if (!name || !password)
         return Response.json('Must provide login name and password', {statusText: "Error", status: 422});
 
     let user: User | null = null;
@@ -36,8 +36,7 @@ async function login(req: Request) {
             userColName = process.env.NEXT_PUBLIC_USER_COL;
         } else throw new Error('User Column variable not set')
         const db = data.db(dbName);
-        user = await db.collection<User>(userColName).findOne({name: email}) as User;
-        console.log(user)
+        user = await db.collection<User>(userColName).findOne({name: name}) as User;
     } catch (err) {
         console.log(err)
     }

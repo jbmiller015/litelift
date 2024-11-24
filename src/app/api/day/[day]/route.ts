@@ -77,7 +77,11 @@ async function setCookieData(key: string, value: string) {
 export async function GET(request: Request) {
     const headerCookie = request.headers?.get('cookie')?.split('=');
     const path = request.url.split('/');
-    const resource = path[path.length - 1];
+    let resource = path[path.length - 1];
+    if (resource && resource !== '' && resource.includes('%20')) {
+        resource = resource.replace('%20', ' ');
+    }
+    console.log(resource)
     if (headerCookie) {
         try {
             await setCookieData(headerCookie[0], headerCookie[1]);
@@ -99,7 +103,9 @@ export async function GET(request: Request) {
                 throw new Error("JWT secret key is not set in environment variables");
             }
             const payload = jwt.verify(token, jwt_key) as JwtPayloadResult;
+            console.log(payload)
             if (!payload) {
+                console.log("error")
                 return Response.json('You must be logged in.', {statusText: "Error", status: 401});
             }
             if ("payload" in payload) {
@@ -127,7 +133,7 @@ export async function GET(request: Request) {
                 })
                 session.endSession();
                 //Return first match
-                return Response.json(day[0], {statusText: "success", status: 200});
+                return Response.json(day.length > 0 ? day[0] : null, {statusText: "success", status: 200});
             }
 
         } catch (err) {

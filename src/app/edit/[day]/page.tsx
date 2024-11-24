@@ -29,12 +29,11 @@ function EditDayContent() {
     console.log(exerciseData)
     return (
         <div className="text-center">
-            <h2 className="text-5xl border-b-2 my-4">{exerciseData?.name}</h2>
+            <h2 className="text-4xl border-b-2 my-4 text-wrap">Edit {exerciseData?.name}</h2>
             <EditExerciseList/>
             <div
                 onClick={submitExerciseData}
-                className="btn m-2 w-100 border border-gray-400 rounded-lg h-20 text-center text-gray-900 bg-green-400 hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center"
-            >
+                className="btn m-2 w-100 border border-gray-400 rounded-lg h-20 text-center text-gray-900 bg-green-400 hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
                 <h2 className="text-3xl">Done</h2>
             </div>
         </div>

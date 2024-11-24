@@ -4,6 +4,7 @@ import Plus_Icon from "@/assets/icon/plus_icon";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import {ObjectId} from "bson";
+import emptyCacheAtTarget from "@/lib/cacheHandler";
 
 interface dayData {
     _id?: ObjectId | null,
@@ -96,12 +97,12 @@ export default function EditHome() {
                     statusText: 'Validation Error',
                     data: 'Please Give a Name to All New Lifts'
                 });
-                setLoading(false);
             } else {
                 const base = process.env.NEXT_PUBLIC_BASE_URL;
                 if (!base) {
                     throw new Error("Base URL not set in environment variables");
                 }
+                setLoading(true);
                 const res = await fetch(`${base}/api/day/`, {
                     method: "PUT",
                     headers: {'Set-Cookie': document.cookie},
@@ -111,6 +112,7 @@ export default function EditHome() {
                     })
                 })
                 if (res.ok) {
+                    await emptyCacheAtTarget(`${base}/exercises`);
                     router.push(`${base}/exercises`);
                 } else {
                     const errorBody = await res.json();
@@ -127,7 +129,7 @@ export default function EditHome() {
     if (error) return <p>{`Error: ${error}`}</p>
 
     return (<div className="text-center">
-        <h2 className="text-5xl border-b-2 my-4">Lifts</h2>
+        <h2 className="text-5xl border-b-2 my-4">Edit Workouts</h2>
         {showDays()}
         <div onClick={() => addDay()}
              className="btn m-2 w-100 border border-green-400 rounded-lg h-20 text-center text-green-400 bg-transparent hover:bg-green-100 hover:text-green-900 cursor-pointer flex flex-col items-center justify-center">
