@@ -75,7 +75,6 @@ export const ExerciseProvider: React.FC<{ children: React.ReactNode }> = ({child
             if (!res.ok) throw new Error('Failed to fetch data');
             const data = await res.json();
             setExerciseData(data);
-            console.log(data)
         } catch (err) {
             setError(err);
         } finally {

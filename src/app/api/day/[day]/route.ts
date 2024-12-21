@@ -129,7 +129,7 @@ export async function GET(request: Request) {
                     //Dynamically set user filter
                     const agg = createGETAgg(userIdObject, resource);
                     day = await db.collection(dayColName).aggregate(agg).toArray();
-                    console.log(day)
+                    console.log(day[0])
                 })
                 session.endSession();
                 //Return first match

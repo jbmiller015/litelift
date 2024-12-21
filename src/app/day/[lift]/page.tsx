@@ -16,6 +16,9 @@ export default function Day() {
 function DayContent() {
     const {exerciseData, loading, error, saveOnExit, resetWRStatus} = useExerciseContext();
 
+    console.log(exerciseData);
+
+
     useEffect(() => {
         if (!loading && !exerciseData) {
             console.log('No data loaded');
@@ -29,8 +32,8 @@ function DayContent() {
     return (
         <div className="text-center">
             <div className="flex flex-row w-full align-center justify-center relative border-b-2">
-                {exerciseData?.exerciseData.length > 0 ? <div onClick={() => resetWRStatus()}
-                                                              className="btn w-14 mt-4 absolute left-2 border-2 border-amber-400 rounded-lg h-12 text-center text-amber-800 dark:text-amber-100 bg-transparent hover:bg-amber-100 hover:text-amber-900 cursor-pointer flex flex-col items-center justify-center">
+                {exerciseData?.exerciseData?.length > 0 ? <div onClick={() => resetWRStatus()}
+                                                               className="btn w-14 mt-4 absolute left-2 border-2 border-amber-400 rounded-lg h-12 text-center text-amber-800 dark:text-amber-100 bg-transparent hover:bg-amber-100 hover:text-amber-900 cursor-pointer flex flex-col items-center justify-center">
                     <h2 className="text-1xl">Reset</h2>
                 </div> : null}
                 <h2 className="text-4xl my-4">{exerciseData?.name}</h2>

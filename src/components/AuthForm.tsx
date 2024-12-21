@@ -72,7 +72,6 @@ const AuthForm = () => {
             }
             setLoading(true);
             const bodyVal = JSON.stringify({...authData});
-            console.log(bodyVal)
             const res = await fetch(`${base}/api/auth/${path}`, {
                 method: "POST",
                 body: bodyVal
